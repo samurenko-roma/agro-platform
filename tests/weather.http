@@ -1,0 +1,154 @@
+### === WEATHER MODULE ===
+### POST /api/commands  { "command": "...", "data": {} }
+### POST /api/queries   { "query": "...",   "data": {} }
+
+@base = http://localhost:8080
+
+### --- LOCATIONS ---
+
+### Создать точку наблюдения (главная для фермы)
+POST {{base}}/api/commands
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "command": "weather.create_location",
+  "data": {
+    "name": "Главное поле",
+    "latitude": 46.9759,
+    "longitude": 31.9820,
+    "timezone": "Europe/Kiev",
+    "isDefault": true
+  }
+}
+
+###
+
+### Создать точку для конкретной теплицы
+POST {{base}}/api/commands
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "command": "weather.create_location",
+  "data": {
+    "name": "Теплица A",
+    "latitude": 46.9760,
+    "longitude": 31.9821,
+    "productionUnitId": "{{unit_id}}",
+    "isDefault": false
+  }
+}
+
+###
+
+### Список точек наблюдения
+POST {{base}}/api/queries
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "weather.list_locations",
+  "data": {}
+}
+
+###
+
+### --- SYNC ---
+
+### Синхронизировать текущую погоду (дефолтная локация)
+POST {{base}}/api/commands
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "command": "weather.sync_current",
+  "data": {}
+}
+
+###
+
+### Синхронизировать прогноз на 7 дней
+POST {{base}}/api/commands
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "command": "weather.sync_forecast",
+  "data": {
+    "days": 7
+  }
+}
+
+###
+
+### Синхронизировать исторические данные за месяц
+POST {{base}}/api/commands
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "command": "weather.sync_historical",
+  "data": {
+    "from": "2026-05-01T00:00:00Z",
+    "to": "2026-05-31T23:59:59Z"
+  }
+}
+
+###
+
+### --- QUERIES ---
+
+### Текущая погода (дефолтная локация)
+POST {{base}}/api/queries
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "weather.get_current",
+  "data": {}
+}
+
+###
+
+### Текущая погода (конкретная локация)
+POST {{base}}/api/queries
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "weather.get_current",
+  "data": {
+    "locationId": "{{location_id}}"
+  }
+}
+
+###
+
+### Прогноз с текущего момента
+POST {{base}}/api/queries
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "weather.list_forecast",
+  "data": {
+    "locationId": "{{location_id}}"
+  }
+}
+
+###
+
+### Исторические данные за период
+POST {{base}}/api/queries
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "query": "weather.list_historical",
+  "data": {
+    "locationId": "{{location_id}}",
+    "from": "2026-05-01T00:00:00Z",
+    "to": "2026-05-31T23:59:59Z"
+  }
+}
