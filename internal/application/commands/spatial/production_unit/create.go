@@ -49,7 +49,7 @@ func (h *Handler) Create(ctx context.Context, payload any) (any, error) {
 
 		code := pu.BuildCode(parentCode, cmd.Type, seq)
 
-		unit := pu.New(vo.ID(orgId), cmd.ParentID, cmd.Type, code, cmd.Name, seq)
+		unit := pu.New(vo.ID(orgId), cmd.ParentID, cmd.Type, code, &cmd.Name, seq)
 		unit.Properties.AddCapabilities(cmd.Capabilities)
 		if cmd.Dimensions != nil {
 			unit.AddDimensions(cmd.Dimensions)

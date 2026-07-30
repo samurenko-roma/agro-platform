@@ -26,21 +26,21 @@ func MakeSpatialModule(uow uow.UnitOfWork, db uow.DB) Module {
 				Handler:   productionunitCmd.NewProductionUnitHandler(uow).Configure,
 				Decoder:   utils.DecodeJSON[productionunitCmd.ConfigureCommand],
 			},
-			{
-				RouteName: "spatial.archive_production_unit",
-				//Handler:   createproductionunit.New(uow).Create,
-				//Decoder:   utils.DecodeJSON[createproductionunit.CreateCommand],
-			},
-			{
-				RouteName: "spatial.move_production_unit",
-				//Handler:   createproductionunit.New(uow).Create,
-				//Decoder:   utils.DecodeJSON[createproductionunit.CreateCommand],
-			},
-			{
-				RouteName: "spatial.clone_production_unit",
-				//Handler:   createproductionunit.New(uow).Create,
-				//Decoder:   utils.DecodeJSON[createproductionunit.CreateCommand],
-			},
+			//{
+			//	RouteName: "spatial.archive_production_unit",
+			//	//Handler:   createproductionunit.New(uow).Create,
+			//	//Decoder:   utils.DecodeJSON[createproductionunit.CreateCommand],
+			//},
+			//{
+			//	RouteName: "spatial.move_production_unit",
+			//	//Handler:   createproductionunit.New(uow).Create,
+			//	//Decoder:   utils.DecodeJSON[createproductionunit.CreateCommand],
+			//},
+			//{
+			//	RouteName: "spatial.clone_production_unit",
+			//	//Handler:   createproductionunit.New(uow).Create,
+			//	//Decoder:   utils.DecodeJSON[createproductionunit.CreateCommand],
+			//},
 		},
 		Queries: []*QueryCNF{
 			{
@@ -53,12 +53,12 @@ func MakeSpatialModule(uow uow.UnitOfWork, db uow.DB) Module {
 				Handler:   productionunitQuery.NewListRoots(spatial.New(db)),
 				Decoder:   utils.DecodeJSON[productionunitQuery.ListRootsQuery],
 			},
-			{
-				RouteName: "spatial.get_production_unit_tree",
-			},
-			{
-				RouteName: "spatial.get_production_unit_children",
-			},
+			//{
+			//	RouteName: "spatial.get_production_unit_tree",
+			//},
+			//{
+			//	RouteName: "spatial.get_production_unit_children",
+			//},
 		},
 	}
 }

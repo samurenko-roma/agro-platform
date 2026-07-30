@@ -8,13 +8,11 @@ import (
 )
 
 type CreateCommand struct {
-	Type         pu.ProductionUnitType   `json:"type" validate:"required"`
-	Status       pu.ProductionUnitStatus `json:"status" validate:"required"`
-	ParentID     *vo.ID                  `json:"parentId,omitempty"`
-	Capabilities []string                `json:"capabilities,omitempty"`
-	Name         *string                 `json:"name"`
-	Dimensions   *pu.Dimensions          `json:"dimensions,omitempty"`
-	CreateChild  bool                    `json:"createChild,omitempty"`
+	Type         pu.ProductionUnitType `json:"type" validate:"required"`
+	ParentID     *vo.ID                `json:"parentId,omitempty"`
+	Capabilities []string              `json:"capabilities,omitempty"`
+	Name         string                `json:"name" validate:"required"`
+	Dimensions   *pu.Dimensions        `json:"dimensions,omitempty"`
 }
 
 type UpdateCommand struct {

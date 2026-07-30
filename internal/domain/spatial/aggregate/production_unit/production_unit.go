@@ -57,6 +57,12 @@ func New(
 	sequence int,
 ) *ProductionUnit {
 	now := time.Now()
+
+	displayName := ""
+	if name != nil {
+		displayName = *name
+	}
+
 	root := &ProductionUnit{
 		ID:         vo.NewID(),
 		ParentID:   ParentId,
@@ -65,7 +71,7 @@ func New(
 		Sequence:   sequence,
 		Type:       unitType,
 		Status:     Empty,
-		Properties: NewProps(*name, ""),
+		Properties: NewProps(displayName, ""),
 		CreatedAt:  now,
 		UpdatedAt:  now,
 	}

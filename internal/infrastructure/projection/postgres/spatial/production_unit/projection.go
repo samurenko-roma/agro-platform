@@ -3,11 +3,15 @@ package productionunit
 import (
 	"context"
 	"encoding/json"
+	"errors"
 
 	productionunit "github.com/samurenkoroma/agro-platform/internal/application/queries/spatial/production_unit"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 )
+
+// ErrProductionUnitNotFound — узел с запрошенным id не найден.
+var ErrProductionUnitNotFound = errors.New("production unit not found")
 
 type projection struct {
 	db uow.DB
@@ -37,22 +41,25 @@ WHERE owner_id = $1 AND parent_id IS NULL AND archived_at IS NULL
 ORDER BY code`
 
 	rows, err := p.db.Query(ctx, sql, ownerId)
-
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	result := make([]*productionunit.DTO, 0)
 
 	for rows.Next() {
 		item, err := scanDTO(rows)
-
 		if err != nil {
 			return nil, err
 		}
 		dto, err := p.Tree(ctx, &item.ID)
+		if err != nil {
+			// узел не должен исчезать между двумя запросами в рамках одной
+			// read-модели, но если это всё же случилось — не роняем весь
+			// список, а пропускаем проблемный узел и продолжаем.
+			continue
+		}
 		result = append(result, dto)
 	}
 
@@ -121,23 +128,43 @@ ORDER BY code
 		nodes = append(nodes, item)
 	}
 
+	if len(nodes) == 0 {
+		// Либо rootID не существует, либо (при rootID == nil) в организации
+		// нет ни одного корневого узла — в обоих случаях это не паника,
+		// а осмысленная бизнес-ошибка "не найдено".
+		return nil, ErrProductionUnitNotFound
+	}
+
 	nodeMap := make(map[vo.ID]rawNode)
 	childrenMap := make(map[vo.ID][]vo.ID)
 
-	var roots []vo.ID
-
 	for _, n := range nodes {
 		nodeMap[n.ID] = n
-
-		if n.ParentID == nil {
-			roots = append(roots, n.ID)
-			continue
+		if n.ParentID != nil {
+			childrenMap[*n.ParentID] = append(childrenMap[*n.ParentID], n.ID)
 		}
+	}
 
-		childrenMap[*n.ParentID] = append(
-			childrenMap[*n.ParentID],
-			n.ID,
-		)
+	// Корень дерева определяется ЯВНО:
+	//  - если rootID передан — это он, вне зависимости от того, есть ли
+	//    у него в БД свой родитель (для целей построения ЭТОГО поддерева
+	//    его собственный родитель не имеет значения);
+	//  - если rootID == nil — ищем узел без родителя среди полученных строк
+	//    (сохранённое поведение для случая "дерево с самого верха").
+	rootNodeID := nodes[0].ID
+	if rootID != nil {
+		rootNodeID = *rootID
+	} else {
+		for _, n := range nodes {
+			if n.ParentID == nil {
+				rootNodeID = n.ID
+				break
+			}
+		}
+	}
+
+	if _, ok := nodeMap[rootNodeID]; !ok {
+		return nil, ErrProductionUnitNotFound
 	}
 
 	var build func(id vo.ID) *productionunit.DTO
@@ -164,7 +191,7 @@ ORDER BY code
 		return &result
 	}
 
-	return build(roots[0]), nil
+	return build(rootNodeID), nil
 }
 
 type scanner interface {
@@ -174,9 +201,7 @@ type scanner interface {
 func scanDTO(row scanner) (*productionunit.DTO, error) {
 
 	var result productionunit.DTO
-
 	var geometryRaw []byte
-
 	var propertiesRaw []byte
 
 	err := row.Scan(
@@ -189,14 +214,12 @@ func scanDTO(row scanner) (*productionunit.DTO, error) {
 		&geometryRaw,
 		&propertiesRaw,
 	)
-
 	if err != nil {
 		return nil, err
 	}
 
 	if propertiesRaw != nil {
 		var props map[string]any
-
 		if err := json.Unmarshal(propertiesRaw, &props); err != nil {
 			return nil, err
 		}
