@@ -6,17 +6,15 @@ import (
 
 	command "github.com/samurenkoroma/agro-platform/internal/application/commands"
 	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
-	spatial2 "github.com/samurenkoroma/agro-platform/internal/application/services/spatial"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
-	pu "github.com/samurenkoroma/agro-platform/internal/domain/spatial/aggregate/production_unit"
 	spatial "github.com/samurenkoroma/agro-platform/internal/domain/spatial/repository"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 
-func (h *Handler) Configure(ctx context.Context, payload any) (any, error) {
-	cmd, ok := payload.(*ConfigureCommand)
+func (h *Handler) Archive(ctx context.Context, payload any) (any, error) {
+	cmd, ok := payload.(*ArchiveCommand)
 	if !ok {
 		return nil, command.ErrInvalidCommandType
 	}
@@ -32,20 +30,33 @@ func (h *Handler) Configure(ctx context.Context, payload any) (any, error) {
 			return nil, repository.ErrInvalidProviderType
 		}
 
-		parent, err := spatialProvider.Units().GetByID(ctx, cmd.Id, vo.ID(orgId))
+		unit, err := spatialProvider.Units().GetByID(ctx, cmd.Id, vo.ID(orgId))
 		if err != nil {
 			return nil, err
 		}
-		if parent == nil {
+		if unit == nil {
 			return nil, ErrProductionUnitNotFound
 		}
-		if parent.ArchivedAt != nil {
-			return nil, pu.ErrParentArchived
-		}
 
-		if err := spatial2.NewUnitLayoutGenerator(spatialProvider.Units(), exec).Generate(ctx, parent, cmd.Schema); err != nil {
+		children, err := spatialProvider.Units().GetChildren(ctx, unit.ID)
+		if err != nil {
 			return nil, err
 		}
-		return response.Id(parent.ID), nil
+		for _, c := range children {
+			if c.ArchivedAt == nil {
+				return nil, ErrHasActiveChildren
+			}
+		}
+
+		if err := unit.Archive(); err != nil {
+			return nil, err
+		}
+
+		if err := spatialProvider.Units().Save(ctx, unit); err != nil {
+			return nil, err
+		}
+
+		exec.RegisterAggregate(unit)
+		return response.Id(unit.ID), nil
 	})
 }

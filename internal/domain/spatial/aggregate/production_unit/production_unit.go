@@ -81,19 +81,27 @@ func New(
 	return root
 }
 
+// AddDimensions задаёт размеры узла. Width/Length — в метрах.
+// Площадь = width * length (м²).
 func (obj *ProductionUnit) AddDimensions(dim *Dimensions) {
 	obj.Properties.Dimensions = dim
 	if dim.Width != nil && dim.Length != nil {
-		w := *dim.Width
-		l := *dim.Length
-		obj.Area = (w * l) / 10000
+		obj.Area = *dim.Width * *dim.Length
 	}
+	obj.UpdatedAt = time.Now()
+}
+
+// SetGeometry задаёт геопривязку контура узла (актуально для полевых типов:
+// FIELD, PLOT, BLOCK, BED — контур на карте фермы).
+func (obj *ProductionUnit) SetGeometry(geometry vo.Geometry) {
+	obj.Geometry = geometry
+	obj.UpdatedAt = time.Now()
 }
 
 func (obj *ProductionUnit) Occupy() {
 	obj.Status = Growing
 	obj.UpdatedAt = time.Now()
-	//obj.AddEvent(NewProductionUnitOccupied(obj.ID))
+	obj.AddEvent(NewProductionUnitOccupied(obj.ID))
 }
 
 func (obj *ProductionUnit) Release() {
@@ -109,8 +117,26 @@ func (obj *ProductionUnit) SetPreparation() {
 }
 
 func (obj *ProductionUnit) UpdateSchema(schema json.RawMessage) {
+	if obj.Properties == nil {
+		obj.Properties = NewProps("", "")
+	}
 	obj.Properties.Metadata["schema"] = schema
+	obj.UpdatedAt = time.Now()
+}
 
+// Archive помечает узел архивным. Архивные узлы:
+//   - не отдаются в ListRoots/Tree (см. проекцию),
+//   - не могут стать родителем нового узла (см. Create),
+//   - не могут быть архивированы повторно.
+func (obj *ProductionUnit) Archive() error {
+	if obj.ArchivedAt != nil {
+		return ErrAlreadyArchived
+	}
+	now := time.Now()
+	obj.ArchivedAt = &now
+	obj.UpdatedAt = now
+	obj.AddEvent(NewProductionUnitArchived(obj.ID))
+	return nil
 }
 
 func BuildCode(parentCode string, unitType ProductionUnitType, seq int) string {
@@ -121,4 +147,11 @@ func BuildCode(parentCode string, unitType ProductionUnitType, seq int) string {
 	}
 
 	return parentCode + "-" + part
+}
+
+// SetArea задаёт площадь явно (ручной ввод пользователя). Перекрывает то,
+// что было бы вычислено из Dimensions — это осознанный override.
+func (obj *ProductionUnit) SetArea(squareMeters float64) {
+	obj.Area = squareMeters
+	obj.UpdatedAt = time.Now()
 }

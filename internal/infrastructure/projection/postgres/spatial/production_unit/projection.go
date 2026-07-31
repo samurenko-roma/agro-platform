@@ -10,7 +10,8 @@ import (
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 )
 
-// ErrProductionUnitNotFound — узел с запрошенным id не найден.
+// ErrProductionUnitNotFound — узел с запрошенным id не найден (или все узлы
+// в запрошенном поддереве архивны).
 var ErrProductionUnitNotFound = errors.New("production unit not found")
 
 type projection struct {
@@ -22,7 +23,7 @@ func New(db uow.DB) productionunit.Projection {
 }
 
 func (p *projection) Get(ctx context.Context, id vo.ID) (*productionunit.DTO, error) {
-	sql := `SELECT id,parent_id,type,status,code,area,geometry,properties FROM production_units WHERE id = $1`
+	sql := `SELECT id,parent_id,type,status,code,area,ST_AsGeoJSON(geometry),properties FROM production_units WHERE id = $1`
 
 	row := p.db.QueryRow(ctx, sql, id)
 
@@ -35,7 +36,7 @@ func (p *projection) Get(ctx context.Context, id vo.ID) (*productionunit.DTO, er
 }
 
 func (p *projection) ListRoots(ctx context.Context, ownerId vo.ID) ([]*productionunit.DTO, error) {
-	sql := `SELECT id,parent_id,type,status,code, area,geometry,properties
+	sql := `SELECT id,parent_id,type,status,code, area,ST_AsGeoJSON(geometry),properties
 FROM production_units 
 WHERE owner_id = $1 AND parent_id IS NULL AND archived_at IS NULL 
 ORDER BY code`
@@ -55,14 +56,35 @@ ORDER BY code`
 		}
 		dto, err := p.Tree(ctx, &item.ID)
 		if err != nil {
-			// узел не должен исчезать между двумя запросами в рамках одной
-			// read-модели, но если это всё же случилось — не роняем весь
-			// список, а пропускаем проблемный узел и продолжаем.
 			continue
 		}
 		result = append(result, dto)
 	}
 
+	return result, nil
+}
+
+func (p *projection) Children(ctx context.Context, parentID vo.ID) ([]*productionunit.DTO, error) {
+	sql := `SELECT id,parent_id,type,status,code,area,ST_AsGeoJSON(geometry),properties
+FROM production_units
+WHERE parent_id = $1 AND archived_at IS NULL
+ORDER BY code`
+
+	rows, err := p.db.Query(ctx, sql, parentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	result := make([]*productionunit.DTO, 0)
+	for rows.Next() {
+		dto, err := scanDTO(rows)
+		if err != nil {
+			return nil, err
+		}
+		dto.Children = make([]*productionunit.DTO, 0)
+		result = append(result, dto)
+	}
 	return result, nil
 }
 
@@ -77,15 +99,17 @@ WITH RECURSIVE tree AS (
 		OR
 		(id = $1)
 	)
+	AND archived_at IS NULL
 
 	UNION ALL
 
-	SELECT p.id, p.parent_id, p.type, p.status, p.code, p.area, p.geometry, p.properties
-	FROM production_units p
+	SELECT c.id, c.parent_id, c.type, c.status, c.code, c.area, c.geometry, c.properties
+	FROM production_units c
 	INNER JOIN tree t
-		ON p.parent_id = t.id
+		ON c.parent_id = t.id
+	WHERE c.archived_at IS NULL
 )
-SELECT id, parent_id, type, status, code, area, geometry, properties
+SELECT id, parent_id, type, status, code, area, ST_AsGeoJSON(geometry), properties
 FROM tree
 ORDER BY code
 `
@@ -111,6 +135,8 @@ ORDER BY code
 
 	for rows.Next() {
 		var item rawNode
+		var geometryRaw *string
+		var propertiesRaw []byte
 
 		if err := rows.Scan(
 			&item.ID,
@@ -119,19 +145,29 @@ ORDER BY code
 			&item.Status,
 			&item.Code,
 			&item.Area,
-			&item.Geometry,
-			&item.Properties,
+			&geometryRaw,
+			&propertiesRaw,
 		); err != nil {
 			return nil, err
+		}
+
+		if geometryRaw != nil {
+			geom, err := vo.GeometryFromGeoJSON([]byte(*geometryRaw))
+			if err != nil {
+				return nil, err
+			}
+			item.Geometry = &geom
+		}
+		if propertiesRaw != nil {
+			if err := json.Unmarshal(propertiesRaw, &item.Properties); err != nil {
+				return nil, err
+			}
 		}
 
 		nodes = append(nodes, item)
 	}
 
 	if len(nodes) == 0 {
-		// Либо rootID не существует, либо (при rootID == nil) в организации
-		// нет ни одного корневого узла — в обоих случаях это не паника,
-		// а осмысленная бизнес-ошибка "не найдено".
 		return nil, ErrProductionUnitNotFound
 	}
 
@@ -145,12 +181,9 @@ ORDER BY code
 		}
 	}
 
-	// Корень дерева определяется ЯВНО:
-	//  - если rootID передан — это он, вне зависимости от того, есть ли
-	//    у него в БД свой родитель (для целей построения ЭТОГО поддерева
-	//    его собственный родитель не имеет значения);
-	//  - если rootID == nil — ищем узел без родителя среди полученных строк
-	//    (сохранённое поведение для случая "дерево с самого верха").
+	// Корень поддерева определяется ЯВНО по rootID (а не поиском
+	// ParentID == nil — у запрошенного узла в общем случае есть свой
+	// родитель, для целей построения ЭТОГО поддерева это не важно).
 	rootNodeID := nodes[0].ID
 	if rootID != nil {
 		rootNodeID = *rootID
@@ -201,7 +234,7 @@ type scanner interface {
 func scanDTO(row scanner) (*productionunit.DTO, error) {
 
 	var result productionunit.DTO
-	var geometryRaw []byte
+	var geometryRaw *string
 	var propertiesRaw []byte
 
 	err := row.Scan(
@@ -216,6 +249,14 @@ func scanDTO(row scanner) (*productionunit.DTO, error) {
 	)
 	if err != nil {
 		return nil, err
+	}
+
+	if geometryRaw != nil {
+		geom, err := vo.GeometryFromGeoJSON([]byte(*geometryRaw))
+		if err != nil {
+			return nil, err
+		}
+		result.Geometry = &geom
 	}
 
 	if propertiesRaw != nil {

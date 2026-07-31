@@ -16,27 +16,28 @@ type productionUnitRepository struct {
 }
 
 func (r *productionUnitRepository) GetNextSequence(ctx context.Context, orgID vo.ID, parentID *vo.ID, unitType pu.ProductionUnitType) (int, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (r *productionUnitRepository) GetParentCode(ctx context.Context, parentID vo.ID) (string, error) {
-	//TODO implement me
 	panic("implement me")
 }
 
 func (r *productionUnitRepository) Exists(ctx context.Context, id vo.ID) (bool, error) {
-	//TODO implement me
 	panic("implement me")
 }
 
 func (r *productionUnitRepository) Save(ctx context.Context, aggregate *pu.ProductionUnit) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.items[aggregate.ID] = aggregate
 	return nil
 }
 
 func (r *productionUnitRepository) GetByID(ctx context.Context, id vo.ID, orgId vo.ID) (*pu.ProductionUnit, error) {
-	//TODO implement me
-	panic("implement me")
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	unit, ok := r.items[id]
+	if !ok || unit.OwnerID != orgId {
+		return nil, nil
+	}
+	return unit, nil
 }
 
 func (r *productionUnitRepository) GetChildren(ctx context.Context, parentID vo.ID) ([]*pu.ProductionUnit, error) {
@@ -44,24 +45,25 @@ func (r *productionUnitRepository) GetChildren(ctx context.Context, parentID vo.
 	defer r.mu.RUnlock()
 
 	result := make([]*pu.ProductionUnit, 0)
-
 	for _, unit := range r.items {
-		if unit.ParentID == nil {
-			continue
-		}
-
-		if *unit.ParentID == parentID {
+		if unit.ParentID != nil && *unit.ParentID == parentID {
 			result = append(result, unit)
 		}
 	}
-
-	return result,
-		nil
+	return result, nil
 }
 
-func (r *productionUnitRepository) Delete(id vo.ID) error {
-	//TODO implement me
-	panic("implement me")
+func (r *productionUnitRepository) ListByOwner(ctx context.Context, ownerID vo.ID) ([]*pu.ProductionUnit, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+
+	result := make([]*pu.ProductionUnit, 0)
+	for _, unit := range r.items {
+		if unit.OwnerID == ownerID {
+			result = append(result, unit)
+		}
+	}
+	return result, nil
 }
 
 func NewProductionUnitRepository() repository.ProductionUnitRepository {

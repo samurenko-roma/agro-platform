@@ -41,4 +41,5 @@ type Projection interface {
 	Get(ctx context.Context, id vo.ID) (*DTO, error)
 	ListRoots(ctx context.Context, ownerId vo.ID) ([]*DTO, error)
 	Tree(ctx context.Context, rootID *vo.ID) (*DTO, error)
+	Children(ctx context.Context, parentID vo.ID) ([]*DTO, error)
 }

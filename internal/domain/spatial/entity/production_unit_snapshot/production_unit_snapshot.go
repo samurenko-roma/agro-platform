@@ -8,21 +8,21 @@ import (
 )
 
 type ProductionUnitSnapshot struct {
-	ID vo.ID
+	ID vo.ID `json:"id"`
 
-	SnapshotID vo.ID
+	SnapshotID vo.ID `json:"snapshotId"`
 
-	OriginalUnitID vo.ID
+	OriginalUnitID vo.ID `json:"originalUnitId"`
 
-	Type pu.ProductionUnitType
+	Type pu.ProductionUnitType `json:"type"`
 
-	Name string
+	Name string `json:"name"`
 
-	ParentID *vo.ID
+	ParentID *vo.ID `json:"parentId,omitempty"`
 
-	Capabilities []pu.Capability
+	Capabilities []pu.Capability `json:"capabilities,omitempty"`
 
-	Metadata vo.Metadata
+	Metadata vo.Metadata `json:"metadata,omitempty"`
 
-	CreatedAt time.Time
+	CreatedAt time.Time `json:"createdAt"`
 }

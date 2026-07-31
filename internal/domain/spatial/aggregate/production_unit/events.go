@@ -13,6 +13,7 @@ const (
 	EventOccupied      = "production_unit.occupied"
 	EventReleased      = "production_unit.released"
 	EventInPreparation = "production_unit.in_preparation"
+	EventArchived      = "production_unit.archived"
 )
 
 type ProductionUnitOccupied struct{ ev.BaseEvent }
@@ -33,6 +34,12 @@ func NewProductionUnitInPreparation(id vo.ID) ProductionUnitInPreparation {
 	return ProductionUnitInPreparation{ev.NewBaseEvent(id, EventInPreparation)}
 }
 
+type ProductionUnitArchived struct{ ev.BaseEvent }
+
+func NewProductionUnitArchived(id vo.ID) ProductionUnitArchived {
+	return ProductionUnitArchived{ev.NewBaseEvent(id, EventArchived)}
+}
+
 type ProductionUnitCreated struct {
 	ev.BaseEvent
 }
@@ -40,18 +47,13 @@ type ProductionUnitCreated struct {
 func NewProductionUnitCreated(
 	id vo.ID,
 ) ProductionUnitCreated {
-
 	return ProductionUnitCreated{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventCreated,
-		),
+		BaseEvent: ev.NewBaseEvent(id, EventCreated),
 	}
 }
 
 type ProductionUnitAttached struct {
 	ev.BaseEvent
-
 	ParentID vo.ID
 }
 
@@ -59,13 +61,8 @@ func NewProductionUnitAttached(
 	id vo.ID,
 	parent vo.ID,
 ) ProductionUnitAttached {
-
 	return ProductionUnitAttached{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventAttached,
-		),
-
-		ParentID: parent,
+		BaseEvent: ev.NewBaseEvent(id, EventAttached),
+		ParentID:  parent,
 	}
 }
