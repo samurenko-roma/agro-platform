@@ -1,6 +1,6 @@
 POST http://localhost:8080/api/commands/
 Content-Type: application/json
-Authorization: Bearer {{jwt_token}}
+Authorization: Bearer {{token}}
 
 
 {
@@ -48,8 +48,8 @@ Authorization: Bearer {{token}}
 }
 ###
 
-POST http://localhost:8080/api/queries/
+POST http://localhost:8080/api/queries/spatial.list_production_units
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
-{"query":"spatial.list_production_units","data":{}}
+{}

@@ -19,7 +19,7 @@ type SwitchOrganizationCmd struct {
 	OrganizationID string `json:"organization_id"`
 }
 
-type switchOrganizationResult struct {
+type SwitchOrganizationResult struct {
 	TokenPair  *jwt.TokenPair           `json:"tokenPair"`
 	CurrentOrg dto.UserOrganizationInfo `json:"currentOrg"`
 }
@@ -88,7 +88,7 @@ func (h *OrganizationHandler) Switch(ctx context.Context, cmd any) (any, error) 
 			return nil, err
 		}
 
-		return switchOrganizationResult{
+		return SwitchOrganizationResult{
 			TokenPair: tokenPair,
 			CurrentOrg: dto.UserOrganizationInfo{
 				OrganizationID:   org.ID,

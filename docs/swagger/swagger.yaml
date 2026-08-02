@@ -42,6 +42,48 @@ definitions:
       released_at:
         type: string
     type: object
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  auth.LogoutRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  auth.RegisterRequest:
+    properties:
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      role:
+        type: string
+      username:
+        type: string
+    type: object
+  auth.RegisterResponse:
+    properties:
+      email:
+        type: string
+      message:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+      username:
+        type: string
+    type: object
   crop.AgronomyProfile:
     properties:
       lightRequirement:
@@ -442,6 +484,16 @@ definitions:
     required:
     - type
     type: object
+  organization.CreateOrganizationCmd:
+    properties:
+      name:
+        type: string
+    type: object
+  organization.SwitchOrganizationCmd:
+    properties:
+      organization_id:
+        type: string
+    type: object
   planting.ChangePlantingCommand:
     properties:
       id:
@@ -808,6 +860,62 @@ info:
   title: Agro Platform API
   version: "1.0"
 paths:
+  /api/commands/account.create_organization:
+    post:
+      consumes:
+      - application/json
+      description: 'Можно вызвать напрямую этим путём (тело = data), либо через POST
+        /api/commands с конвертом {"command": "account.create_organization", "data":
+        {...}}'
+      parameters:
+      - description: Название организации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/organization.CreateOrganizationCmd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать организацию (ферму/хозяйство), пользователь становится владельцем
+      tags:
+      - account
+  /api/commands/account.switch_organization:
+    post:
+      consumes:
+      - application/json
+      description: 'Можно вызвать напрямую этим путём (тело = data), либо через POST
+        /api/commands с конвертом {"command": "account.switch_organization", "data":
+        {...}}'
+      parameters:
+      - description: ID организации, в которой есть членство
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/organization.SwitchOrganizationCmd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+        "403":
+          description: нет членства в организации
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+      security:
+      - BearerAuth: []
+      summary: Переключиться на другую организацию (перевыпускает JWT с новым organization_id)
+      tags:
+      - account
   /api/commands/agronomy.create_crop:
     post:
       consumes:
@@ -1610,6 +1718,24 @@ paths:
       summary: Обновить JSON-схему узла
       tags:
       - spatial
+  /api/queries/account.me:
+    post:
+      consumes:
+      - application/json
+      description: 'Можно вызвать напрямую этим путём (тело = data), либо через POST
+        /api/queries с конвертом {"query": "account.me", "data": {...}}'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+      security:
+      - BearerAuth: []
+      summary: Текущий пользователь + список организаций, в которых он состоит
+      tags:
+      - account
   /api/queries/agronomy.get_crop:
     post:
       consumes:
@@ -2089,6 +2215,78 @@ paths:
       summary: Список корневых узлов организации (с вложенными деревьями)
       tags:
       - spatial
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Email и пароль
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+      summary: Вход, выдаёт access/refresh токены
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh-токен
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/auth.LogoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+      security:
+      - BearerAuth: []
+      summary: Выход (текущая реализация — заглушка, blacklist токенов не ведётся)
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные регистрации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RegisterRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/auth.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.CommandResponse'
+      summary: Регистрация нового пользователя
+      tags:
+      - auth
 securityDefinitions:
   BearerAuth:
     description: 'JWT из POST /auth/login. Формат: "Bearer <token>"'
