@@ -16,8 +16,7 @@ func (h harvestBatchRepository) Save(ctx context.Context, batch *harvestbatch.Ha
 	panic("implement me")
 }
 
-func (h harvestBatchRepository) GetByID(ctx context.Context, id vo.ID) (*harvestbatch.HarvestBatch, error) {
-	//TODO implement me
+func (h harvestBatchRepository) GetByID(ctx context.Context, id vo.ID, farmID vo.ID) (*harvestbatch.HarvestBatch, error) {
 	panic("implement me")
 }
 

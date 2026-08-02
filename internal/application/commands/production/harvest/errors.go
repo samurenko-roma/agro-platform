@@ -3,7 +3,6 @@ package harvest
 import "errors"
 
 var (
-	ErrPlantingNotFound      = errors.New("planting not found")
-	ErrInvalidProductionUnit = errors.New("invalid production unit")
-	ErrCycleAlreadyExists    = errors.New("active cycle already exists")
+	ErrHarvestNotFound      = errors.New("harvest batch not found")
+	ErrGrowingCycleNotFound = errors.New("growing cycle not found")
 )

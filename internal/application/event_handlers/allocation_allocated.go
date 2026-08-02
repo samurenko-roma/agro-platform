@@ -37,7 +37,10 @@ func onAllocationAllocated(unitOfWork uow.UnitOfWork) bus.EventHandler {
 			}
 			unit, err := spatial.Units().GetByID(ctx, evt.ProductionUnitID, vo.ID(orgId))
 			if err != nil {
-				return nil, fmt.Errorf("production unit %s not found: %w", evt.ProductionUnitID, err)
+				return nil, fmt.Errorf("production unit %s: %w", evt.ProductionUnitID, err)
+			}
+			if unit == nil {
+				return nil, fmt.Errorf("production unit %s not found", evt.ProductionUnitID)
 			}
 
 			unit.Occupy()
@@ -60,6 +63,10 @@ func onAllocationReleased(unitOfWork uow.UnitOfWork) bus.EventHandler {
 		if !ok {
 			return fmt.Errorf("unexpected event type: %T", e)
 		}
+		orgId, ok := ctx.Value("organization_id").(string)
+		if !ok {
+			return errors.New("organization_id is required")
+		}
 
 		_, err := unitOfWork.Execute(ctx, spatialProviders.NewSpatialProvider, func(p repository.RepositoryProvider, exec uow.Execution) (any, error) {
 			spatial, ok := p.(spatialrepo.SpatialProvider)
@@ -67,9 +74,12 @@ func onAllocationReleased(unitOfWork uow.UnitOfWork) bus.EventHandler {
 				return nil, repository.ErrInvalidProviderType
 			}
 
-			unit, err := spatial.Units().GetByID(ctx, evt.ProductionUnitID, "")
+			unit, err := spatial.Units().GetByID(ctx, evt.ProductionUnitID, vo.ID(orgId))
 			if err != nil {
-				return nil, fmt.Errorf("production unit %s not found: %w", evt.ProductionUnitID, err)
+				return nil, fmt.Errorf("production unit %s: %w", evt.ProductionUnitID, err)
+			}
+			if unit == nil {
+				return nil, fmt.Errorf("production unit %s not found", evt.ProductionUnitID)
 			}
 
 			unit.Release()

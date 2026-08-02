@@ -14,7 +14,6 @@ const (
 
 type AllocationAllocated struct {
 	ev.BaseEvent
-
 	ProductionUnitID vo.ID
 }
 
@@ -24,33 +23,14 @@ func NewAllocationAllocated(allocationID vo.ID, prodUnitID vo.ID) AllocationAllo
 
 type AllocationReleased struct {
 	ev.BaseEvent
-
-	AllocationID vo.ID
-
-	CycleID   vo.ID
-	CycleName string
-
-	ProductionUnitID   vo.ID
-	ProductionUnitName string
-
-	Area float64
-
-	ReleasedAt time.Time
+	ProductionUnitID vo.ID
+	ReleasedAt       time.Time
 }
 
-func NewAllocationReleased(
-	allocationID, cycleID vo.ID, cycleName string,
-	unitID vo.ID, unitName string,
-	area float64, releasedAt time.Time,
-) AllocationReleased {
+func NewAllocationReleased(allocationID vo.ID, prodUnitID vo.ID) AllocationReleased {
 	return AllocationReleased{
-		BaseEvent:          ev.NewBaseEvent(allocationID, EventReleased),
-		AllocationID:       allocationID,
-		CycleID:            cycleID,
-		CycleName:          cycleName,
-		ProductionUnitID:   unitID,
-		ProductionUnitName: unitName,
-		Area:               area,
-		ReleasedAt:         releasedAt,
+		BaseEvent:        ev.NewBaseEvent(allocationID, EventReleased),
+		ProductionUnitID: prodUnitID,
+		ReleasedAt:       time.Now(),
 	}
 }

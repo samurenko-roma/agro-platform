@@ -24,8 +24,7 @@ func (a allocationRepository) Save(ctx context.Context, allocation *allocation.A
 	panic("implement me")
 }
 
-func (a allocationRepository) GetByID(ctx context.Context, id vo.ID) (*allocation.Allocation, error) {
-	//TODO implement me
+func (a allocationRepository) GetByID(ctx context.Context, id vo.ID, farmID vo.ID) (*allocation.Allocation, error) {
 	panic("implement me")
 }
 

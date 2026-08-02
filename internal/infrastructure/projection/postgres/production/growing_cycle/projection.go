@@ -17,24 +17,6 @@ func New(db uow.DB) growingcycle.Projection {
 	return &projection{db: db}
 }
 
-//func (p *projection) Get(ctx context.Context, id vo.ID) (*growingcycle.DTO, error) {
-//	sql := `SELECT cycle.id,
-//       cycle.name,
-//       code,
-//       c.name crop_aame,
-//       v.name variety_name,
-//       status,
-//       stage,
-//       cycle.created_at
-//FROM production_growing_cycles cycle
-//         left join crops c on crop_id = c.id
-//         left join varieties v on variety_id = v.id  WHERE cycle.id = $1`
-//
-//	row := p.db.QueryRow(ctx, sql, id)
-//
-//	return scanDTO(row)
-//}
-
 func (p *projection) List(ctx context.Context, filter growingcycle.FilterCycle) ([]*growingcycle.DTO, error) {
 
 	sql := `
@@ -55,30 +37,24 @@ ORDER BY crop.name DESC;
 `
 
 	rows, err := p.db.Query(ctx, sql, filter.OwnerId)
-
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	result := make([]*growingcycle.DTO, 0)
 	cropIDs := make([]vo.ID, 0)
-
 	index := make(map[vo.ID]*growingcycle.DTO)
 
 	for rows.Next() {
-
 		item := &growingcycle.DTO{}
 		var cropId vo.ID
 		if err := rows.Scan(
 			&cropId,
 			&item.CropName,
 			&item.AllocatedArea,
-
 			&item.TasksCount,
 			&item.Progress,
-
 			&item.Count,
 		); err != nil {
 			return nil, err
@@ -88,7 +64,6 @@ ORDER BY crop.name DESC;
 
 		result = append(result, item)
 		cropIDs = append(cropIDs, cropId)
-
 		index[cropId] = item
 	}
 	if len(cropIDs) == 0 {
@@ -99,41 +74,38 @@ ORDER BY crop.name DESC;
 SELECT c.id,
        c.name,
        crop.id,
-       v.name ,
+       v.name,
        c.status,
        c.stage,
        a.production_unit_id,
        pu.code,
        a.area,
-       (CURRENT_DATE - a.started_at::date )::int growing_days,
+       (CURRENT_DATE - a.started_at::date)::int growing_days,
        v.profile#>'{Maturity,DaysToHarvest}'  varietyDays,
        crop.agronomy#>'{Maturity,DaysToHarvest}'  cropDays,
        a.started_at,
        a.ended_at
 FROM production_allocations a
-         INNER JOIN production_units pu ON pu.id = a.production_unit_id
-         right join production_growing_cycles c on c.id = a.cycle_id
-         left join agronomy_crops crop on crop.id = c.crop_id
-         left join agronomy_varieties v on v.id = c.variety_id
+         LEFT JOIN production_units pu ON pu.id = a.production_unit_id
+         RIGHT JOIN production_growing_cycles c on c.id = a.cycle_id
+         LEFT JOIN agronomy_crops crop on crop.id = c.crop_id
+         LEFT JOIN agronomy_varieties v on v.id = c.variety_id
 WHERE c.crop_id = ANY($1)
 ORDER BY pu.code
 `
 
-	rows, err = p.db.Query(ctx, sql, cropIDs)
-
+	rows2, err := p.db.Query(ctx, sql, cropIDs)
 	if err != nil {
 		return nil, err
 	}
+	defer rows2.Close()
 
-	defer rows.Close()
-
-	for rows.Next() {
-
+	for rows2.Next() {
 		var cropId vo.ID
 		var growingDays, varietyDays, cropDays *int
 		var allocation growingcycle.AllocationDTO
 
-		if err := rows.Scan(
+		if err := rows2.Scan(
 			&allocation.CycleId,
 			&allocation.CycleName,
 			&cropId,
@@ -142,29 +114,43 @@ ORDER BY pu.code
 			&allocation.Stage,
 			&allocation.ProductionUnitId,
 			&allocation.ProductionUnitName,
-
 			&allocation.Area,
 			&growingDays, &varietyDays, &cropDays,
-
 			&allocation.StartDate,
 			&allocation.EndDate,
 		); err != nil {
 			return nil, err
 		}
 
-		allocation.DaysToMaturity = *shared.Override[int](cropDays, varietyDays)
-		allocation.Progress = int(float64(*growingDays) / float64(allocation.DaysToMaturity) * 100)
 		dto, ok := index[cropId]
-
 		if !ok {
 			continue
 		}
+
+		// Цикл без единой аллокации (обычная ситуация для только что
+		// созданного цикла) — a.* колонки NULL из-за RIGHT JOIN. Это не
+		// ошибка, просто нечего показать по прогрессу для этой записи.
+		if allocation.ProductionUnitId == nil {
+			dto.Allocations = append(dto.Allocations, allocation)
+			continue
+		}
+
+		if daysToMaturity := shared.Override[int](cropDays, varietyDays); daysToMaturity != nil && *daysToMaturity > 0 && growingDays != nil {
+			allocation.DaysToMaturity = *daysToMaturity
+			allocation.Progress = int(float64(*growingDays) / float64(*daysToMaturity) * 100)
+		}
+		// Иначе DaysToMaturity/Progress остаются нулевыми: нет данных о
+		// зрелости ни у сорта, ни у культуры — честное "неизвестно" вместо
+		// паники или мусорного значения от деления на ноль/NaN.
+
 		dto.Progress += allocation.Progress
 		dto.Allocations = append(dto.Allocations, allocation)
 	}
 
 	for _, dto := range result {
-		dto.Progress = dto.Progress / len(dto.Allocations)
+		if len(dto.Allocations) > 0 {
+			dto.Progress = dto.Progress / len(dto.Allocations)
+		}
 	}
 
 	return result, nil

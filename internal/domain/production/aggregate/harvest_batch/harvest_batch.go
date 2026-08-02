@@ -10,6 +10,7 @@ import (
 type HarvestBatch struct {
 	ev.BaseAggregate
 	ID          vo.ID
+	FarmID      vo.ID
 	CycleID     vo.ID
 	HarvestedAt time.Time
 	Quantity    float64
@@ -17,11 +18,12 @@ type HarvestBatch struct {
 	UpdatedAt   time.Time
 }
 
-func New(cycleID vo.ID, harvestedAt time.Time, quantity float64) *HarvestBatch {
+func New(farmID, cycleID vo.ID, harvestedAt time.Time, quantity float64) *HarvestBatch {
 	now := time.Now()
 
 	return &HarvestBatch{
 		ID:          vo.NewID(),
+		FarmID:      farmID,
 		CycleID:     cycleID,
 		HarvestedAt: harvestedAt,
 		Quantity:    quantity,

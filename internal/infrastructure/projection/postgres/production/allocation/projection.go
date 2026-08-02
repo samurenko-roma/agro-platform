@@ -12,6 +12,10 @@ type projection struct {
 	db uow.DB
 }
 
+func New(db uow.DB) allocation.Projection {
+	return &projection{db: db}
+}
+
 func (p *projection) GetOccupancy(ctx context.Context, productionUnitID vo.ID) (*allocation.OccupancyDTO, error) {
 
 	sql := `SELECT pu.id, pu.code,pu.area,COALESCE(SUM(a.area), 0) allocated_area
@@ -22,7 +26,6 @@ WHERE pu.id = $1
 GROUP BY pu.id, pu.code,pu.area`
 
 	var result allocation.OccupancyDTO
-
 	var totalArea float64
 	var allocatedArea float64
 
@@ -32,7 +35,6 @@ GROUP BY pu.id, pu.code,pu.area`
 		&totalArea,
 		&allocatedArea,
 	)
-
 	if err != nil {
 		return nil, err
 	}
@@ -42,9 +44,6 @@ GROUP BY pu.id, pu.code,pu.area`
 	result.FreeArea = totalArea - allocatedArea
 
 	return &result, nil
-}
-func New(db uow.DB) allocation.Projection {
-	return &projection{db: db}
 }
 
 func (p *projection) ListByCycleID(ctx context.Context, cycleID vo.ID) ([]*allocation.DTO, error) {
@@ -62,24 +61,19 @@ LEFT JOIN production_units pu
 WHERE a.cycle_id = $1
 ORDER BY a.started_at;`
 	rows, err := p.db.Query(ctx, sql, cycleID)
-
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	result := make([]*allocation.DTO, 0)
-
 	for rows.Next() {
 		item, err := scanDTO(rows)
-
 		if err != nil {
 			return nil, err
 		}
 		result = append(result, item)
 	}
-
 	return result, nil
 }
 
@@ -98,24 +92,19 @@ LEFT JOIN production_units pu
 WHERE a.production_unit_id = $1
 ORDER BY a.started_at;`
 	rows, err := p.db.Query(ctx, sql, productionUnitID)
-
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	result := make([]*allocation.DTO, 0)
-
 	for rows.Next() {
 		item, err := scanDTO(rows)
-
 		if err != nil {
 			return nil, err
 		}
 		result = append(result, item)
 	}
-
 	return result, nil
 }
 
@@ -129,11 +118,10 @@ func (p *projection) Get(ctx context.Context, id vo.ID) (*allocation.DTO, error)
     a.started_at,
     a.ended_at
 FROM public.production_allocations a
-         left join production_units unit on a.production_unit_id = a.id
+         LEFT JOIN production_units unit ON unit.id = a.production_unit_id
 WHERE a.id = $1`
 
 	row := p.db.QueryRow(ctx, sql, id)
-
 	return scanDTO(row)
 }
 
@@ -147,27 +135,23 @@ func (p *projection) List(ctx context.Context, ownerId vo.ID) ([]*allocation.DTO
     a.started_at,
     a.ended_at
 FROM public.production_allocations a
-         left join production_units unit on a.production_unit_id = a.id
-WHERE unit.owner_id = $1  ORDER BY unit.code`
+         LEFT JOIN production_units unit ON unit.id = a.production_unit_id
+WHERE a.farm_id = $1
+ORDER BY unit.code`
 	rows, err := p.db.Query(ctx, sql, ownerId)
-
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	result := make([]*allocation.DTO, 0)
-
 	for rows.Next() {
 		item, err := scanDTO(rows)
-
 		if err != nil {
 			return nil, err
 		}
 		result = append(result, item)
 	}
-
 	return result, nil
 }
 

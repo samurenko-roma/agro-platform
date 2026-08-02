@@ -24,18 +24,9 @@ func NewGrowingCycleRepository(db uow.DB) repository.GrowingCycleRepository {
 func (r *growingCycleRepository) Save(ctx context.Context, cycle *growingcycle.GrowingCycle) error {
 	_, err := r.db.Exec(ctx, `
 		INSERT INTO production_growing_cycles (
-			id,
-			farm_id,
-			crop_id,
-			variety_id,
-			protocol_id,
-			name,
-			code,
-			method,
-			status,
-			stage,
-			created_at,
-			updated_at
+			id, farm_id, crop_id, variety_id, protocol_id,
+			name, code, method, status, stage,
+			created_at, updated_at
 		)
 		VALUES (
 			$1,$2,$3,$4,$5,
@@ -44,60 +35,40 @@ func (r *growingCycleRepository) Save(ctx context.Context, cycle *growingcycle.G
 		)
 		ON CONFLICT (id)
 		DO UPDATE SET
-			farm_id = EXCLUDED.farm_id,
-			crop_id = EXCLUDED.crop_id,
-			variety_id = EXCLUDED.variety_id,
+			farm_id     = EXCLUDED.farm_id,
+			crop_id     = EXCLUDED.crop_id,
+			variety_id  = EXCLUDED.variety_id,
 			protocol_id = EXCLUDED.protocol_id,
-			name = EXCLUDED.name,
-			code = EXCLUDED.code,
-			method = EXCLUDED.method,
-			status = EXCLUDED.status,
-			stage = EXCLUDED.stage,
-			updated_at = EXCLUDED.updated_at
+			name        = EXCLUDED.name,
+			code        = EXCLUDED.code,
+			method      = EXCLUDED.method,
+			status      = EXCLUDED.status,
+			stage       = EXCLUDED.stage,
+			updated_at  = EXCLUDED.updated_at
 	`,
-		cycle.ID,
-		cycle.FarmID,
-		cycle.CropID,
-		cycle.VarietyID,
-		cycle.ProtocolID,
-		cycle.Name,
-		cycle.Code,
-		cycle.Method,
-		cycle.Status,
-		cycle.Stage,
-		cycle.CreatedAt,
-		cycle.UpdatedAt,
+		cycle.ID, cycle.FarmID, cycle.CropID, cycle.VarietyID, cycle.ProtocolID,
+		cycle.Name, cycle.Code, cycle.Method, cycle.Status, cycle.Stage,
+		cycle.CreatedAt, cycle.UpdatedAt,
 	)
 
 	return err
 }
 
-func (r *growingCycleRepository) GetByID(ctx context.Context, id vo.ID) (*growingcycle.GrowingCycle, error) {
+func (r *growingCycleRepository) GetByID(ctx context.Context, id vo.ID, farmID vo.ID) (*growingcycle.GrowingCycle, error) {
 	root := &growingcycle.GrowingCycle{}
 
 	err := r.db.QueryRow(ctx, `
 		SELECT
-			id,
-			farm_id,
-			crop_id,
-			variety_id,
-			protocol_id,
-			name,
-			code,
-			method,
-			status,
-			stage,
-			expected_harvest_at,
-			created_at,
-			updated_at
+			id, farm_id, crop_id, variety_id, protocol_id,
+			name, code, method, status, stage,
+			created_at, updated_at
 		FROM production_growing_cycles
-		WHERE id = $1
-	`, id).Scan(scanGrowingCycle(root)...)
+		WHERE id = $1 AND farm_id = $2
+	`, id, farmID).Scan(scanGrowingCycle(root)...)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
-
 	if err != nil {
 		return nil, err
 	}
@@ -105,32 +76,21 @@ func (r *growingCycleRepository) GetByID(ctx context.Context, id vo.ID) (*growin
 	return root, nil
 }
 
-func (r *growingCycleRepository) GetByCode(ctx context.Context, code string) (*growingcycle.GrowingCycle, error) {
+func (r *growingCycleRepository) GetByCode(ctx context.Context, code string, farmID vo.ID) (*growingcycle.GrowingCycle, error) {
 	root := &growingcycle.GrowingCycle{}
 
 	err := r.db.QueryRow(ctx, `
 		SELECT
-			id,
-			farm_id,
-			crop_id,
-			variety_id,
-			protocol_id,
-			name,
-			code,
-			method,
-			status,
-			stage,
-			expected_harvest_at,
-			created_at,
-			updated_at
+			id, farm_id, crop_id, variety_id, protocol_id,
+			name, code, method, status, stage,
+			created_at, updated_at
 		FROM production_growing_cycles
-		WHERE code = $1
-	`, code).Scan(scanGrowingCycle(root)...)
+		WHERE code = $1 AND farm_id = $2
+	`, code, farmID).Scan(scanGrowingCycle(root)...)
 
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil
 	}
-
 	if err != nil {
 		return nil, err
 	}
@@ -141,20 +101,11 @@ func (r *growingCycleRepository) GetByCode(ctx context.Context, code string) (*g
 func (r *growingCycleRepository) List(ctx context.Context, filter repository.ListFilter) ([]*growingcycle.GrowingCycle, error) {
 	query := `
 		SELECT
-			id,
-			farm_id,
-			crop_id,
-			variety_id,
-			protocol_id,
-			name,
-			code,
-			method,
-			status,
-			stage,
-			expected_harvest_at,
-			created_at,
-			updated_at
-		FROM production_growing_cycles`
+			id, farm_id, crop_id, variety_id, protocol_id,
+			name, code, method, status, stage,
+			created_at, updated_at
+		FROM production_growing_cycles
+		WHERE 1=1`
 
 	args := make([]any, 0)
 	argPos := 1
@@ -195,18 +146,15 @@ func (r *growingCycleRepository) List(ctx context.Context, filter repository.Lis
 	if err != nil {
 		return nil, err
 	}
-
 	defer rows.Close()
 
 	result := make([]*growingcycle.GrowingCycle, 0)
 
 	for rows.Next() {
 		root := &growingcycle.GrowingCycle{}
-
 		if err := rows.Scan(scanGrowingCycle(root)...); err != nil {
 			return nil, err
 		}
-
 		result = append(result, root)
 	}
 
@@ -215,6 +163,5 @@ func (r *growingCycleRepository) List(ctx context.Context, filter repository.Lis
 
 func (r *growingCycleRepository) Delete(ctx context.Context, id vo.ID) error {
 	_, err := r.db.Exec(ctx, `DELETE FROM production_growing_cycles WHERE id = $1`, id)
-
 	return err
 }

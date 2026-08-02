@@ -18,11 +18,9 @@ func (p plantingRepository) Save(ctx context.Context, planting *planting.Plantin
 	panic("implement me")
 }
 
-func (p plantingRepository) GetByID(ctx context.Context, id vo.ID) (*planting.Planting, error) {
-	//TODO implement me
+func (p plantingRepository) GetByID(ctx context.Context, id vo.ID, farmID vo.ID) (*planting.Planting, error) {
 	panic("implement me")
 }
-
 func (p plantingRepository) ListByCycleID(ctx context.Context, cycleID vo.ID) ([]*planting.Planting, error) {
 	//TODO implement me
 	panic("implement me")

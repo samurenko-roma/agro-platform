@@ -22,13 +22,10 @@ func (g growingCycleRepository) Save(ctx context.Context, cycle *gc.GrowingCycle
 	panic("implement me")
 }
 
-func (g growingCycleRepository) GetByID(ctx context.Context, id vo.ID) (*gc.GrowingCycle, error) {
-	//TODO implement me
+func (g growingCycleRepository) GetByID(ctx context.Context, id vo.ID, farmID vo.ID) (*gc.GrowingCycle, error) {
 	panic("implement me")
 }
-
-func (g growingCycleRepository) GetByCode(ctx context.Context, code string) (*gc.GrowingCycle, error) {
-	//TODO implement me
+func (g growingCycleRepository) GetByCode(ctx context.Context, code string, farmID vo.ID) (*gc.GrowingCycle, error) {
 	panic("implement me")
 }
 

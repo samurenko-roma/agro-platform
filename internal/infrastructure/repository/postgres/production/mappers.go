@@ -27,6 +27,7 @@ func scanGrowingCycle(root *growingcycle.GrowingCycle) []any {
 func scanAllocation(root *allocation.Allocation) []any {
 	return []any{
 		&root.ID,
+		&root.FarmID,
 		&root.CycleID,
 		&root.ProductionUnitID,
 		&root.Area,
@@ -40,6 +41,7 @@ func scanAllocation(root *allocation.Allocation) []any {
 func scanPlanting(root *planting.Planting) []any {
 	return []any{
 		&root.ID,
+		&root.FarmID,
 		&root.CycleID,
 		&root.PlantedAt,
 		&root.Quantity,
@@ -47,9 +49,11 @@ func scanPlanting(root *planting.Planting) []any {
 		&root.UpdatedAt,
 	}
 }
+
 func scanHarvest(root *harvestbatch.HarvestBatch) []any {
 	return []any{
 		&root.ID,
+		&root.FarmID,
 		&root.CycleID,
 		&root.HarvestedAt,
 		&root.Quantity,

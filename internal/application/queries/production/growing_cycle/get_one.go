@@ -2,8 +2,10 @@ package growingcycle
 
 import (
 	"context"
+	"errors"
 
 	"github.com/samurenkoroma/agro-platform/internal/application/queries"
+	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 )
 
 type handler struct {
@@ -21,10 +23,13 @@ type GetOneQuery struct {
 }
 
 func (h *handler) Ask(ctx context.Context, payload any) (any, error) {
-	_, ok := payload.(*GetOneQuery)
+	q, ok := payload.(*GetOneQuery)
 	if !ok {
 		return nil, queries.ErrInvalidQueryType
 	}
-
-	return nil, nil //h.cycles.Get(ctx, vo.ID(q.Id))
+	orgID, ok := ctx.Value("organization_id").(string)
+	if !ok {
+		return nil, errors.New("organization_id is required")
+	}
+	return h.cycles.Summary(ctx, vo.ID(orgID), vo.ID(q.Id))
 }

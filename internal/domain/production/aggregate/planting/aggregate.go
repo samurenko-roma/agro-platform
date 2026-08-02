@@ -10,6 +10,7 @@ import (
 type Planting struct {
 	ev.BaseAggregate
 	ID        vo.ID
+	FarmID    vo.ID
 	CycleID   vo.ID
 	PlantedAt time.Time
 	Quantity  float64
@@ -17,11 +18,12 @@ type Planting struct {
 	UpdatedAt time.Time
 }
 
-func New(cycleID vo.ID, plantedAt time.Time, quantity float64) *Planting {
+func New(farmID, cycleID vo.ID, plantedAt time.Time, quantity float64) *Planting {
 	now := time.Now()
 
 	return &Planting{
 		ID:        vo.NewID(),
+		FarmID:    farmID,
 		CycleID:   cycleID,
 		PlantedAt: plantedAt,
 		Quantity:  quantity,

@@ -26,105 +26,53 @@ const (
 
 type CycleCreated struct {
 	ev.BaseEvent
-	ProductionUnitID vo.ID
 }
 
-type CycleStarted struct {
-	ev.BaseEvent
-}
-type CyclePaused struct {
-	ev.BaseEvent
-}
-type CycleResumed struct {
-	ev.BaseEvent
-}
-type CycleFailed struct {
-	ev.BaseEvent
-}
-type CycleArchived struct {
-	ev.BaseEvent
+func NewCycleCreated(id vo.ID) CycleCreated {
+	return CycleCreated{BaseEvent: ev.NewBaseEvent(id, EventCreated)}
 }
 
-type CycleHarvestStarted struct {
-	ev.BaseEvent
-}
+type CycleStarted struct{ ev.BaseEvent }
+type CyclePaused struct{ ev.BaseEvent }
+type CycleResumed struct{ ev.BaseEvent }
+type CycleFailed struct{ ev.BaseEvent }
+type CycleArchived struct{ ev.BaseEvent }
+
+type CycleHarvestStarted struct{ ev.BaseEvent }
 type CyclePartialHarvest struct {
 	RecordId vo.ID
 	ev.BaseEvent
 }
-type CycleHarvestCompleted struct {
-	ev.BaseEvent
-}
+type CycleHarvestCompleted struct{ ev.BaseEvent }
 
 func NewHarvestStarted(id vo.ID) CycleHarvestStarted {
-	return CycleHarvestStarted{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventHarvestStarted,
-		),
-	}
+	return CycleHarvestStarted{BaseEvent: ev.NewBaseEvent(id, EventHarvestStarted)}
 }
 
-func NewPartialHarvest(id vo.ID, i vo.ID) CyclePartialHarvest {
-	return CyclePartialHarvest{
-		RecordId: i,
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventPartialHarvest,
-		),
-	}
+func NewPartialHarvest(id vo.ID, recordId vo.ID) CyclePartialHarvest {
+	return CyclePartialHarvest{RecordId: recordId, BaseEvent: ev.NewBaseEvent(id, EventPartialHarvest)}
 }
+
 func NewHarvestCompleted(id vo.ID) CycleHarvestCompleted {
-	return CycleHarvestCompleted{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventHarvestCompleted,
-		),
-	}
+	return CycleHarvestCompleted{BaseEvent: ev.NewBaseEvent(id, EventHarvestCompleted)}
 }
 
-func NewCycleCreated(id vo.ID, productionUnitId vo.ID) CycleCreated {
-	return CycleCreated{
-		BaseEvent:        ev.NewBaseEvent(id, EventCreated),
-		ProductionUnitID: productionUnitId,
-	}
-}
 func NewCycleStarted(id vo.ID) CycleStarted {
-	return CycleStarted{
-		BaseEvent: ev.NewBaseEvent(id, EventStarted),
-	}
+	return CycleStarted{BaseEvent: ev.NewBaseEvent(id, EventStarted)}
 }
 
 func NewCyclePaused(id vo.ID) CyclePaused {
-	return CyclePaused{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventPaused,
-		),
-	}
+	return CyclePaused{BaseEvent: ev.NewBaseEvent(id, EventPaused)}
 }
+
 func NewCycleResumed(id vo.ID) CycleResumed {
-	return CycleResumed{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventResumed,
-		),
-	}
+	return CycleResumed{BaseEvent: ev.NewBaseEvent(id, EventResumed)}
 }
 
 func NewCycleFailed(id vo.ID) CycleFailed {
-	return CycleFailed{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventFailed,
-		),
-	}
+	return CycleFailed{BaseEvent: ev.NewBaseEvent(id, EventFailed)}
 }
+
 func NewCycleArchived(id vo.ID) CycleArchived {
-	return CycleArchived{
-		BaseEvent: ev.NewBaseEvent(
-			id,
-			EventArchived,
-		),
-	}
+	return CycleArchived{BaseEvent: ev.NewBaseEvent(id, EventArchived)}
 }

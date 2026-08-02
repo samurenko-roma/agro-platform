@@ -9,7 +9,7 @@ import (
 )
 
 func (p *productionProvider) ProviderName() string {
-	return ""
+	return "production"
 }
 
 func NewProductionProvider(db uow.DB) repository.RepositoryProvider {
