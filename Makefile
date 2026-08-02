@@ -112,3 +112,14 @@ migrate-status:
 
 desc:
 	cd ./myproject && wails dev
+
+swagger:
+	swag init \
+		-g general.go \
+		-d docs/swaggerdocs \
+		--parseDependency \
+		--parseInternal \
+        --parseDependencyLevel 3 \
+		--parseDepth 3 \
+		--output docs/swagger \
+		--outputTypes json,yaml

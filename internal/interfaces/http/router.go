@@ -48,6 +48,8 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	protectedMux := http.NewServeMux()
 	protectedMux.Handle("/commands/", CommandEndpoint(cfg.CommandRouter))
 	protectedMux.Handle("/queries/", QueryEndpoint(cfg.QueryRouter))
+	protectedMux.Handle("POST /commands/{name}", CommandByNameEndpoint(cfg.CommandRouter))
+	protectedMux.Handle("POST /queries/{name}", QueryByNameEndpoint(cfg.QueryRouter))
 
 	// Применяем middleware для защиты
 	protectedHandler := authMiddleware.Authenticate(protectedMux)
@@ -55,6 +57,8 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	// Монтируем защищенные эндпоинты
 	mux.Handle("/api/", http.StripPrefix("/api", protectedHandler))
 
+	mux.Handle("/swagger/", http.StripPrefix("/swagger/", http.FileServer(http.Dir("docs/swagger"))))
+	mux.Handle("/scalar/", http.StripPrefix("/scalar/", http.FileServer(http.Dir("docs/scalar"))))
 	// Опционально: эндпоинт для health check (без аутентификации)
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		response.Success(map[string]string{"status": "ok"}).WriteJSON(w, http.StatusOK)
