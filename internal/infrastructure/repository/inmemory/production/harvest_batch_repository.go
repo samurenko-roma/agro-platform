@@ -2,34 +2,56 @@ package production
 
 import (
 	"context"
+	"sync"
 
-	"github.com/samurenkoroma/agro-platform/internal/domain/production/aggregate/harvest_batch"
-	"github.com/samurenkoroma/agro-platform/internal/domain/production/repository"
+	harvestbatch "github.com/samurenkoroma/agro-platform/internal/domain/production/aggregate/harvest_batch"
+	repo "github.com/samurenkoroma/agro-platform/internal/domain/production/repository"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 )
 
 type harvestBatchRepository struct {
+	mu    sync.RWMutex
+	items map[vo.ID]*harvestbatch.HarvestBatch
 }
 
-func (h harvestBatchRepository) Save(ctx context.Context, batch *harvestbatch.HarvestBatch) error {
-	//TODO implement me
-	panic("implement me")
+func NewHarvestBatchRepository() repo.HarvestBatchRepository {
+	return &harvestBatchRepository{items: make(map[vo.ID]*harvestbatch.HarvestBatch)}
 }
 
-func (h harvestBatchRepository) GetByID(ctx context.Context, id vo.ID, farmID vo.ID) (*harvestbatch.HarvestBatch, error) {
-	panic("implement me")
+func (r *harvestBatchRepository) Save(ctx context.Context, batch *harvestbatch.HarvestBatch) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.items[batch.ID] = batch
+	return nil
 }
 
-func (h harvestBatchRepository) ListByCycleID(ctx context.Context, cycleID vo.ID) ([]*harvestbatch.HarvestBatch, error) {
-	//TODO implement me
-	panic("implement me")
+func (r *harvestBatchRepository) GetByID(ctx context.Context, id vo.ID, farmID vo.ID) (*harvestbatch.HarvestBatch, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	b, ok := r.items[id]
+	if !ok || b.FarmID != farmID {
+		return nil, nil
+	}
+	return b, nil
 }
 
-func (h harvestBatchRepository) Delete(ctx context.Context, id vo.ID) error {
-	//TODO implement me
-	panic("implement me")
+func (r *harvestBatchRepository) ListByCycleID(ctx context.Context, cycleID vo.ID) ([]*harvestbatch.HarvestBatch, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	result := make([]*harvestbatch.HarvestBatch, 0)
+	for _, b := range r.items {
+		if b.CycleID == cycleID {
+			result = append(result, b)
+		}
+	}
+	return result, nil
 }
 
-func NewHarvestBatchRepository() repository.HarvestBatchRepository {
-	return &harvestBatchRepository{}
+func (r *harvestBatchRepository) Delete(ctx context.Context, id vo.ID) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.items, id)
+	return nil
 }
+
+var _ repo.HarvestBatchRepository = (*harvestBatchRepository)(nil)

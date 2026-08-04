@@ -10,23 +10,18 @@ import (
 )
 
 type productionUnitRepository struct {
-	mu sync.RWMutex
-
+	mu    sync.RWMutex
 	items map[vo.ID]*pu.ProductionUnit
 }
 
-func (r *productionUnitRepository) GetNextSequence(ctx context.Context, orgID vo.ID, parentID *vo.ID, unitType pu.ProductionUnitType) (int, error) {
-	panic("implement me")
+func NewProductionUnitRepository() repository.ProductionUnitRepository {
+	return &productionUnitRepository{items: make(map[vo.ID]*pu.ProductionUnit)}
 }
 
-func (r *productionUnitRepository) Exists(ctx context.Context, id vo.ID) (bool, error) {
-	panic("implement me")
-}
-
-func (r *productionUnitRepository) Save(ctx context.Context, aggregate *pu.ProductionUnit) error {
+func (r *productionUnitRepository) Save(ctx context.Context, unit *pu.ProductionUnit) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.items[aggregate.ID] = aggregate
+	r.items[unit.ID] = unit
 	return nil
 }
 
@@ -43,7 +38,6 @@ func (r *productionUnitRepository) GetByID(ctx context.Context, id vo.ID, orgId 
 func (r *productionUnitRepository) GetChildren(ctx context.Context, parentID vo.ID) ([]*pu.ProductionUnit, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-
 	result := make([]*pu.ProductionUnit, 0)
 	for _, unit := range r.items {
 		if unit.ParentID != nil && *unit.ParentID == parentID {
@@ -56,7 +50,6 @@ func (r *productionUnitRepository) GetChildren(ctx context.Context, parentID vo.
 func (r *productionUnitRepository) ListByOwner(ctx context.Context, ownerID vo.ID) ([]*pu.ProductionUnit, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-
 	result := make([]*pu.ProductionUnit, 0)
 	for _, unit := range r.items {
 		if unit.OwnerID == ownerID {
@@ -66,8 +59,31 @@ func (r *productionUnitRepository) ListByOwner(ctx context.Context, ownerID vo.I
 	return result, nil
 }
 
-func NewProductionUnitRepository() repository.ProductionUnitRepository {
-	return &productionUnitRepository{
-		items: make(map[vo.ID]*pu.ProductionUnit),
-	}
+func (r *productionUnitRepository) Exists(ctx context.Context, id vo.ID) (bool, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	_, ok := r.items[id]
+	return ok, nil
 }
+
+func (r *productionUnitRepository) GetNextSequence(ctx context.Context, orgID vo.ID, parentID *vo.ID, unitType pu.ProductionUnitType) (int, error) {
+	r.mu.RLock()
+	defer r.mu.RUnlock()
+	max := 0
+	for _, unit := range r.items {
+		if unit.OwnerID != orgID || unit.Type != unitType {
+			continue
+		}
+		sameParent := (unit.ParentID == nil && parentID == nil) ||
+			(unit.ParentID != nil && parentID != nil && *unit.ParentID == *parentID)
+		if !sameParent {
+			continue
+		}
+		if unit.Sequence > max {
+			max = unit.Sequence
+		}
+	}
+	return max + 1, nil
+}
+
+var _ repository.ProductionUnitRepository = (*productionUnitRepository)(nil)

@@ -58,7 +58,6 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	mux.Handle("/api/", http.StripPrefix("/api", protectedHandler))
 
 	mux.Handle("/swagger/", http.StripPrefix("/swagger/", http.FileServer(http.Dir("docs/swagger"))))
-	mux.Handle("/scalar/", http.StripPrefix("/scalar/", http.FileServer(http.Dir("docs/scalar"))))
 	// Опционально: эндпоинт для health check (без аутентификации)
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
 		response.Success(map[string]string{"status": "ok"}).WriteJSON(w, http.StatusOK)
