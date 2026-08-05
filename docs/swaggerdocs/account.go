@@ -34,7 +34,7 @@ func docCreateOrganization() {}
 // @Security BearerAuth
 // @Param request body organization.SwitchOrganizationCmd true "ID организации, в которой есть членство"
 // @Success 200 {object} response.CommandResponse[organization.SwitchOrganizationResult]
-// @Failure 403 {object} response.CommandResponse "нет членства в организации"
+// @Failure 403 {object} response.CommandResponse[any] "нет членства в организации"
 // @Router /api/commands/account.switch_organization [post]
 func docSwitchOrganization() {}
 
@@ -45,6 +45,6 @@ func docSwitchOrganization() {}
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/account.me [post]
 func docMe() {}

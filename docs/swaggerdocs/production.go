@@ -17,7 +17,7 @@ var (
 	_ = allocationQuery.ListQuery{}
 	_ = harvest.RegisterHarvestCommand{}
 	_ = planting.RegisterPlantingCommand{}
-	_ = response.CommandResponse{}
+	_ = response.CommandResponse[any]{}
 )
 
 // docCreateCycle godoc
@@ -28,7 +28,7 @@ var (
 // @Produce json
 // @Security BearerAuth
 // @Param request body growingcycleCmd.CreateCommand true "Культура, сорт, протокол, метод"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/production.create_cycle [post]
 func docCreateCycle() {}
 
@@ -40,7 +40,7 @@ func docCreateCycle() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body growingcycleCmd.StartGrowingCycleCMD true "Культура, сорт, метод, обязательные allocations, опциональные plantings"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/production.start_cycle [post]
 func docStartCycle() {}
 
@@ -52,8 +52,8 @@ func docStartCycle() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body allocationCmd.AllocateProductionUnitCommand true "ID цикла, ID узла, площадь"
-// @Success 200 {object} response.CommandResponse
-// @Failure 404 {object} response.CommandResponse "цикл не найден в вашей организации"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 404 {object} response.CommandResponse[any] "цикл не найден в вашей организации"
 // @Router /api/commands/production.allocate_production_unit [post]
 func docAllocateProductionUnit() {}
 
@@ -65,7 +65,7 @@ func docAllocateProductionUnit() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body allocationCmd.ChangeAllocationCommand true "ID размещения, новые параметры"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/production.change_allocation [post]
 func docChangeAllocation() {}
 
@@ -77,8 +77,8 @@ func docChangeAllocation() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body allocationCmd.ReleaseAllocationCommand true "ID размещения, дата освобождения (опционально — по умолчанию сейчас)"
-// @Success 200 {object} response.CommandResponse
-// @Failure 409 {object} response.CommandResponse "уже освобождено"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 409 {object} response.CommandResponse[any] "уже освобождено"
 // @Router /api/commands/production.release_allocation [post]
 func docReleaseAllocation() {}
 
@@ -90,8 +90,8 @@ func docReleaseAllocation() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body planting.RegisterPlantingCommand true "ID цикла, дата, количество"
-// @Success 200 {object} response.CommandResponse
-// @Failure 404 {object} response.CommandResponse "цикл не найден в вашей организации"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 404 {object} response.CommandResponse[any] "цикл не найден в вашей организации"
 // @Router /api/commands/production.planting_register [post]
 func docPlantingRegister() {}
 
@@ -103,7 +103,7 @@ func docPlantingRegister() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body planting.ChangePlantingCommand true "ID посева, новые дата/количество"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/production.planting_change [post]
 func docPlantingChange() {}
 
@@ -115,8 +115,8 @@ func docPlantingChange() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body harvest.RegisterHarvestCommand true "ID цикла, дата, количество"
-// @Success 200 {object} response.CommandResponse
-// @Failure 404 {object} response.CommandResponse "цикл не найден в вашей организации"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 404 {object} response.CommandResponse[any] "цикл не найден в вашей организации"
 // @Router /api/commands/production.harvest_register [post]
 func docHarvestRegister() {}
 
@@ -128,7 +128,7 @@ func docHarvestRegister() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body harvest.ChangeHarvestCommand true "ID харвеста, новые дата/количество"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/production.harvest_change [post]
 func docHarvestChange() {}
 
@@ -140,7 +140,7 @@ func docHarvestChange() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body growingcycleQuery.GetOneQuery true "ID цикла"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/production.get_growing_cycle [post]
 func docGetGrowingCycle() {}
 
@@ -151,7 +151,7 @@ func docGetGrowingCycle() {}
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/production.list_growing_cycles [post]
 func docListGrowingCycles() {}
 
@@ -163,7 +163,7 @@ func docListGrowingCycles() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body growingcycleQuery.SummaryQuery true "ID цикла"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/production.summary_growing_cycles [post]
 func docSummaryGrowingCycles() {}
 
@@ -175,7 +175,7 @@ func docSummaryGrowingCycles() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body allocationQuery.GetOneQuery true "ID размещения"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/production.get_allocation [post]
 func docGetAllocation() {}
 
@@ -186,7 +186,7 @@ func docGetAllocation() {}
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/production.list_allocations [post]
 func docListAllocations() {}
 
@@ -197,6 +197,6 @@ func docListAllocations() {}
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/production.helpers [post]
 func docHelpers() {}

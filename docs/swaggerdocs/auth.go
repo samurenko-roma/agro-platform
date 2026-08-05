@@ -23,7 +23,7 @@ var (
 // @Produce json
 // @Param request body auth.RegisterRequest true "Данные регистрации"
 // @Success 201 {object} auth.RegisterResponse
-// @Failure 400 {object} response.CommandResponse
+// @Failure 400 {object} response.CommandResponse[any]
 // @Router /auth/register [post]
 func docRegister() {}
 
@@ -33,8 +33,8 @@ func docRegister() {}
 // @Accept json
 // @Produce json
 // @Param request body auth.LoginRequest true "Email и пароль"
-// @Success 200 {object} response.CommandResponse
-// @Failure 401 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 401 {object} response.CommandResponse[any]
 // @Router /auth/login [post]
 func docLogin() {}
 
@@ -45,6 +45,6 @@ func docLogin() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body auth.LogoutRequest false "Refresh-токен"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /auth/logout [post]
 func docLogout() {}

@@ -23,7 +23,7 @@ type TestDB struct {
 }
 
 // migrationsRoot — относительный путь от этого файла до папки migrations.
-const migrationsRoot = "../../../../migrations"
+const migrationsRoot = "../../../migrations"
 
 func NewTestDB(t *testing.T, modules ...string) *TestDB {
 	t.Helper()

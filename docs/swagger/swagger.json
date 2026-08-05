@@ -1,13 +1,12 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "CQRS-style API. Все команды — POST /api/commands с телом\n{\"command\": \"\u003cname\u003e\", \"data\": {...}}; все запросы — POST\n/api/queries с телом {\"query\": \"\u003cname\u003e\", \"data\": {...}}.\nКаждая операция ниже задокументирована как отдельный путь\nдля читаемости; \"Try it out\" отправляет уже переписанный,\nреальный запрос.",
+        "description": "CQRS-style API. У каждой команды/запроса — свой путь вида\n/api/commands/{name} или /api/queries/{name}, тело =\ndata. Тот же результат — POST /api/commands или\n/api/queries с конвертом {\"command\"/\"query\": \"\u003cname\u003e\",\n\"data\": {...}}.",
         "title": "Agro Platform API",
         "contact": {},
         "version": "1.0"
     },
-    "host": "api.lab.note",
-    "basePath": "/",
+    "host": "localhost:8080",
     "paths": {
         "/api/commands/account.create_organization": {
             "post": {
@@ -42,7 +41,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-dto_UserOrganizationInfo"
                         }
                     }
                 }
@@ -81,13 +80,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-organization_SwitchOrganizationResult"
                         }
                     },
                     "403": {
                         "description": "нет членства в организации",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -126,13 +125,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "409": {
                         "description": "культура с таким именем уже существует",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -171,7 +170,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -210,19 +209,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "404": {
                         "description": "культура не найдена",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "409": {
                         "description": "сорт с таким именем уже существует у этой культуры",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -261,7 +260,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -300,13 +299,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "409": {
                         "description": "недостаточно зарезервированного остатка",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -345,7 +344,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -384,7 +383,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -423,7 +422,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -462,7 +461,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -501,13 +500,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "409": {
                         "description": "недостаточно свободного остатка",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -546,7 +545,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -585,7 +584,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -624,7 +623,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -663,7 +662,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -702,7 +701,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -741,7 +740,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -780,7 +779,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -819,13 +818,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "404": {
                         "description": "цикл не найден в вашей организации",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -864,7 +863,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -903,7 +902,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -942,7 +941,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -981,13 +980,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "404": {
                         "description": "цикл не найден в вашей организации",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1026,7 +1025,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1065,13 +1064,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "404": {
                         "description": "цикл не найден в вашей организации",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1110,13 +1109,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "409": {
                         "description": "уже освобождено",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1155,7 +1154,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1194,13 +1193,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "409": {
                         "description": "есть неархивные дети",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1239,7 +1238,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1278,13 +1277,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1323,7 +1322,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1351,7 +1350,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1390,7 +1389,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1429,7 +1428,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1467,7 +1466,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1495,7 +1494,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1534,7 +1533,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1573,7 +1572,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1611,7 +1610,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1649,7 +1648,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1677,7 +1676,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1716,7 +1715,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1754,7 +1753,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1792,7 +1791,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1830,7 +1829,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1869,7 +1868,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1908,7 +1907,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1936,7 +1935,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1964,7 +1963,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -1992,7 +1991,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -2031,7 +2030,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -2070,7 +2069,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -2098,7 +2097,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-array_productionunit_DTO"
                         }
                     }
                 }
@@ -2131,13 +2130,13 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -2174,7 +2173,7 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -2213,7 +2212,7 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse"
+                            "$ref": "#/definitions/response.CommandResponse-any"
                         }
                     }
                 }
@@ -2491,6 +2490,23 @@
                 "dailyNeedOpt": {
                     "type": "number",
                     "format": "float64"
+                }
+            }
+        },
+        "dto.UserOrganizationInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "roleName": {
+                    "type": "string"
                 }
             }
         },
@@ -2870,6 +2886,20 @@
                 }
             }
         },
+        "jwt.TokenPair": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "expiresIn": {
+                    "type": "integer"
+                },
+                "refreshToken": {
+                    "type": "string"
+                }
+            }
+        },
         "listcrops.Query": {
             "type": "object",
             "properties": {
@@ -2946,6 +2976,17 @@
             "properties": {
                 "organization_id": {
                     "type": "string"
+                }
+            }
+        },
+        "organization.SwitchOrganizationResult": {
+            "type": "object",
+            "properties": {
+                "currentOrg": {
+                    "$ref": "#/definitions/dto.UserOrganizationInfo"
+                },
+                "tokenPair": {
+                    "$ref": "#/definitions/jwt.TokenPair"
                 }
             }
         },
@@ -3066,6 +3107,42 @@
                 },
                 "type": {
                     "$ref": "#/definitions/productionunit.ProductionUnitType"
+                }
+            }
+        },
+        "productionunit.DTO": {
+            "type": "object",
+            "properties": {
+                "area": {
+                    "type": "number"
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/productionunit.DTO"
+                    }
+                },
+                "code": {
+                    "type": "string"
+                },
+                "geometry": {
+                    "$ref": "#/definitions/valueobject.Geometry"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "string"
+                },
+                "properties": {
+                    "type": "object",
+                    "additionalProperties": {}
+                },
+                "status": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },
@@ -3208,10 +3285,55 @@
                 }
             }
         },
-        "response.CommandResponse": {
+        "response.CommandResponse-any": {
             "type": "object",
             "properties": {
                 "data": {},
+                "error": {
+                    "$ref": "#/definitions/response.ErrorInfo"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.CommandResponse-array_productionunit_DTO": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/productionunit.DTO"
+                    }
+                },
+                "error": {
+                    "$ref": "#/definitions/response.ErrorInfo"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.CommandResponse-dto_UserOrganizationInfo": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/dto.UserOrganizationInfo"
+                },
+                "error": {
+                    "$ref": "#/definitions/response.ErrorInfo"
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "response.CommandResponse-organization_SwitchOrganizationResult": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/organization.SwitchOrganizationResult"
+                },
                 "error": {
                     "$ref": "#/definitions/response.ErrorInfo"
                 },

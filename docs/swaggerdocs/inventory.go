@@ -15,7 +15,7 @@ var (
 	_ = warehouseQuery.ListQuery{}
 	_ = movQuery.ListQuery{}
 	_ = itemQuery.ListQuery{}
-	_ = response.CommandResponse{}
+	_ = response.CommandResponse[any]{}
 )
 
 // docCreateItem godoc
@@ -26,7 +26,7 @@ var (
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemCmd.CreateItemCommand true "Название, тип, единица измерения, склад (опционально)"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/inventory.create_item [post]
 func docCreateItem() {}
 
@@ -38,7 +38,7 @@ func docCreateItem() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemCmd.ReceiveCommand true "ID позиции, количество, примечание"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/inventory.receive [post]
 func docReceive() {}
 
@@ -50,8 +50,8 @@ func docReceive() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemCmd.ReserveCommand true "ID позиции, количество, ссылка (тип+ID)"
-// @Success 200 {object} response.CommandResponse
-// @Failure 409 {object} response.CommandResponse "недостаточно свободного остатка"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 409 {object} response.CommandResponse[any] "недостаточно свободного остатка"
 // @Router /api/commands/inventory.reserve [post]
 func docReserve() {}
 
@@ -63,8 +63,8 @@ func docReserve() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemCmd.ConsumeCommand true "ID позиции, количество, ссылка (тип+ID)"
-// @Success 200 {object} response.CommandResponse
-// @Failure 409 {object} response.CommandResponse "недостаточно зарезервированного остатка"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 409 {object} response.CommandResponse[any] "недостаточно зарезервированного остатка"
 // @Router /api/commands/inventory.consume [post]
 func docConsume() {}
 
@@ -76,7 +76,7 @@ func docConsume() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemCmd.MarkLostCommand true "ID позиции, количество, примечание"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/inventory.mark_lost [post]
 func docMarkLost() {}
 
@@ -88,7 +88,7 @@ func docMarkLost() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemCmd.TransferCommand true "ID позиции, количество, ID складов отправитель/получатель"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/inventory.transfer [post]
 func docTransfer() {}
 
@@ -100,7 +100,7 @@ func docTransfer() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body warehouseCmd.CreateWarehouseCommand true "Название, код (опционально)"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/inventory.create_warehouse [post]
 func docCreateWarehouse() {}
 
@@ -112,7 +112,7 @@ func docCreateWarehouse() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body warehouseCmd.ArchiveWarehouseCommand true "ID склада"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/inventory.archive_warehouse [post]
 func docArchiveWarehouse() {}
 
@@ -124,7 +124,7 @@ func docArchiveWarehouse() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemQuery.GetOneQuery true "ID позиции"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/inventory.get_item [post]
 func docGetItem() {}
 
@@ -136,7 +136,7 @@ func docGetItem() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body itemQuery.ListQuery false "warehouseId — опционально"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/inventory.list_items [post]
 func docListItems() {}
 
@@ -148,7 +148,7 @@ func docListItems() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body movQuery.ListQuery false "itemId — опционально"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/inventory.list_movements [post]
 func docListMovements() {}
 
@@ -159,6 +159,6 @@ func docListMovements() {}
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/inventory.list_warehouses [post]
 func docListWarehouses() {}

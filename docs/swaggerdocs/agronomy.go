@@ -31,8 +31,8 @@ var (
 // @Produce json
 // @Security BearerAuth
 // @Param request body crop.CreateCropCommand true "Название, категория, семейство, агрономический профиль"
-// @Success 200 {object} response.CommandResponse
-// @Failure 409 {object} response.CommandResponse "культура с таким именем уже существует"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 409 {object} response.CommandResponse[any] "культура с таким именем уже существует"
 // @Router /api/commands/agronomy.create_crop [post]
 func docCreateCrop() {}
 
@@ -44,9 +44,9 @@ func docCreateCrop() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body variety.CreateVarietyCommand true "Название, ID культуры, дни до созревания"
-// @Success 200 {object} response.CommandResponse
-// @Failure 404 {object} response.CommandResponse "культура не найдена"
-// @Failure 409 {object} response.CommandResponse "сорт с таким именем уже существует у этой культуры"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 404 {object} response.CommandResponse[any] "культура не найдена"
+// @Failure 409 {object} response.CommandResponse[any] "сорт с таким именем уже существует у этой культуры"
 // @Router /api/commands/agronomy.create_variety [post]
 func docCreateVariety() {}
 
@@ -58,7 +58,7 @@ func docCreateVariety() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body season.CreateSeasonCmd true "Название, даты начала/конца, статус"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/agronomy.create_season [post]
 func docCreateSeason() {}
 
@@ -70,7 +70,7 @@ func docCreateSeason() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body getcrop.Query true "ID культуры"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/agronomy.get_crop [post]
 func docGetCrop() {}
 
@@ -82,7 +82,7 @@ func docGetCrop() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body listcrops.Query false "Фильтр по категориям/поиску (опционально)"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/agronomy.list_crops [post]
 func docListCrops() {}
 
@@ -94,7 +94,7 @@ func docListCrops() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body getvariety.Query true "ID сорта"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/agronomy.get_variety [post]
 func docGetVariety() {}
 
@@ -106,7 +106,7 @@ func docGetVariety() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body listvarieties.Query true "ID культуры"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/agronomy.list_varieties [post]
 func docListVarieties() {}
 
@@ -117,6 +117,6 @@ func docListVarieties() {}
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/agronomy.list_seasons [post]
 func docListSeasons() {}

@@ -6,10 +6,10 @@ import (
 )
 
 // CommandResponse стандартный ответ для CQRS команд
-type CommandResponse[T any] struct {
-	Success bool       `json:"success"`
-	Data    T          `json:"data,omitempty"`
-	Error   *ErrorInfo `json:"error,omitempty"`
+type CommandResponse[Data any, E comparable] struct {
+	Success bool `json:"success"`
+	Data    Data `json:"data,omitempty"`
+	Error   E    `json:"error,omitempty"`
 }
 
 // ErrorInfo информация об ошибке
@@ -32,15 +32,15 @@ const (
 )
 
 // Success создает успешный ответ
-func Success[T any](data T) *CommandResponse[T] {
-	return &CommandResponse[T]{
+func Success[T any](data T) *CommandResponse[T, interface{}] {
+	return &CommandResponse[T, interface{}]{
 		Success: true,
 		Data:    data,
 	}
 }
 
 // Error создает ответ с ошибкой
-func Error(code, message string, details ...string) *CommandResponse[any] {
+func Error(code, message string, details ...string) *CommandResponse[any, any] {
 	errInfo := &ErrorInfo{
 		Code:    code,
 		Message: message,
@@ -48,14 +48,14 @@ func Error(code, message string, details ...string) *CommandResponse[any] {
 	if len(details) > 0 && details[0] != "" {
 		errInfo.Details = details[0]
 	}
-	return &CommandResponse[any]{
+	return &CommandResponse[any, any]{
 		Success: false,
 		Error:   errInfo,
 	}
 }
 
 // FromError создает ответ из стандартной ошибки
-func FromError(err error) *CommandResponse[any] {
+func FromError(err error) *CommandResponse[any, any] {
 	// Попытка определить тип ошибки по строке
 	errMsg := err.Error()
 
@@ -76,7 +76,7 @@ func FromError(err error) *CommandResponse[any] {
 }
 
 // WriteJSON записывает CommandResponse в http.ResponseWriter
-func (r *CommandResponse[any]) WriteJSON(w http.ResponseWriter, statusCode int) {
+func (r *CommandResponse[any, any]) WriteJSON(w http.ResponseWriter, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(r)

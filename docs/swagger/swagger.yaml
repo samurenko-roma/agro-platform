@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   allocation.AllocateProductionUnitCommand:
     properties:
@@ -182,6 +181,17 @@ definitions:
       dailyNeedOpt:
         format: float64
         type: number
+    type: object
+  dto.UserOrganizationInfo:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      roleName:
+        type: string
     type: object
   getcrop.Query:
     properties:
@@ -443,6 +453,15 @@ definitions:
     - itemId
     - toWarehouseId
     type: object
+  jwt.TokenPair:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      refreshToken:
+        type: string
+    type: object
   listcrops.Query:
     properties:
       archived:
@@ -493,6 +512,13 @@ definitions:
     properties:
       organization_id:
         type: string
+    type: object
+  organization.SwitchOrganizationResult:
+    properties:
+      currentOrg:
+        $ref: '#/definitions/dto.UserOrganizationInfo'
+      tokenPair:
+        $ref: '#/definitions/jwt.TokenPair'
     type: object
   planting.ChangePlantingCommand:
     properties:
@@ -574,6 +600,30 @@ definitions:
     required:
     - name
     - type
+    type: object
+  productionunit.DTO:
+    properties:
+      area:
+        type: number
+      children:
+        items:
+          $ref: '#/definitions/productionunit.DTO'
+        type: array
+      code:
+        type: string
+      geometry:
+        $ref: '#/definitions/valueobject.Geometry'
+      id:
+        type: string
+      parentId:
+        type: string
+      properties:
+        additionalProperties: {}
+        type: object
+      status:
+        type: string
+      type:
+        type: string
     type: object
   productionunit.Dimensions:
     properties:
@@ -678,9 +728,38 @@ definitions:
           type: integer
         type: array
     type: object
-  response.CommandResponse:
+  response.CommandResponse-any:
     properties:
       data: {}
+      error:
+        $ref: '#/definitions/response.ErrorInfo'
+      success:
+        type: boolean
+    type: object
+  response.CommandResponse-array_productionunit_DTO:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/productionunit.DTO'
+        type: array
+      error:
+        $ref: '#/definitions/response.ErrorInfo'
+      success:
+        type: boolean
+    type: object
+  response.CommandResponse-dto_UserOrganizationInfo:
+    properties:
+      data:
+        $ref: '#/definitions/dto.UserOrganizationInfo'
+      error:
+        $ref: '#/definitions/response.ErrorInfo'
+      success:
+        type: boolean
+    type: object
+  response.CommandResponse-organization_SwitchOrganizationResult:
+    properties:
+      data:
+        $ref: '#/definitions/organization.SwitchOrganizationResult'
       error:
         $ref: '#/definitions/response.ErrorInfo'
       success:
@@ -847,16 +926,15 @@ definitions:
     required:
     - name
     type: object
-host: api.lab.note
+host: localhost:8080
 info:
   contact: {}
   description: |-
-    CQRS-style API. Все команды — POST /api/commands с телом
-    {"command": "<name>", "data": {...}}; все запросы — POST
-    /api/queries с телом {"query": "<name>", "data": {...}}.
-    Каждая операция ниже задокументирована как отдельный путь
-    для читаемости; "Try it out" отправляет уже переписанный,
-    реальный запрос.
+    CQRS-style API. У каждой команды/запроса — свой путь вида
+    /api/commands/{name} или /api/queries/{name}, тело =
+    data. Тот же результат — POST /api/commands или
+    /api/queries с конвертом {"command"/"query": "<name>",
+    "data": {...}}.
   title: Agro Platform API
   version: "1.0"
 paths:
@@ -880,7 +958,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-dto_UserOrganizationInfo'
       security:
       - BearerAuth: []
       summary: Создать организацию (ферму/хозяйство), пользователь становится владельцем
@@ -906,11 +984,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-organization_SwitchOrganizationResult'
         "403":
           description: нет членства в организации
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Переключиться на другую организацию (перевыпускает JWT с новым organization_id)
@@ -935,11 +1013,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "409":
           description: культура с таким именем уже существует
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: 'Создать культуру в справочнике (Crop) — биология вида: температуры,
@@ -965,7 +1043,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Создать агрономический сезон (период планирования)
@@ -990,15 +1068,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "404":
           description: культура не найдена
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "409":
           description: сорт с таким именем уже существует у этой культуры
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Создать сорт культуры (Variety) — конкретный коммерческий сорт с зрелостью/спейсингом
@@ -1023,7 +1101,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Архивировать склад
@@ -1048,11 +1126,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "409":
           description: недостаточно зарезервированного остатка
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Списать зарезервированное (реальный расход)
@@ -1077,7 +1155,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Создать позицию склада (семена, удобрения, субстрат и т.д.)
@@ -1102,7 +1180,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Создать склад
@@ -1127,7 +1205,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Списать позицию как утраченную (порча, просыпано и т.д.)
@@ -1152,7 +1230,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Оприходовать поступление на склад
@@ -1177,11 +1255,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "409":
           description: недостаточно свободного остатка
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Зарезервировать позицию (например, под цикл выращивания)
@@ -1206,7 +1284,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Переместить позицию между складами
@@ -1231,7 +1309,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Назначить задачу исполнителю
@@ -1256,7 +1334,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Отменить задачу (→ CANCELLED)
@@ -1281,7 +1359,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Завершить задачу (→ DONE)
@@ -1306,7 +1384,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Создать задачу (наряд на выполнение работ)
@@ -1331,7 +1409,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Зафиксировать агрономическую операцию (полив, удобрение, обработка
@@ -1357,7 +1435,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Взять задачу в работу (TODO → IN_PROGRESS)
@@ -1382,11 +1460,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "404":
           description: цикл не найден в вашей организации
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Разместить (доп.) цикл выращивания на физическом узле
@@ -1412,7 +1490,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Изменить размещение (площадь/даты, либо перенести на другой узел)
@@ -1437,7 +1515,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Зарегистрировать цикл выращивания без немедленного размещения
@@ -1462,7 +1540,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Изменить ранее зарегистрированный сбор урожая
@@ -1487,11 +1565,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "404":
           description: цикл не найден в вашей организации
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Зарегистрировать сбор урожая
@@ -1516,7 +1594,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Изменить ранее зарегистрированный посев
@@ -1541,11 +1619,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "404":
           description: цикл не найден в вашей организации
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Зарегистрировать акт посева/посадки
@@ -1571,11 +1649,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "409":
           description: уже освобождено
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Завершить размещение (освободить физический узел)
@@ -1603,7 +1681,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Создать цикл выращивания И сразу разместить его на физических узлах
@@ -1629,11 +1707,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "409":
           description: есть неархивные дети
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Архивировать узел
@@ -1658,7 +1736,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Сгенерировать дочерние узлы по схеме (например, грядки в теплице)
@@ -1683,11 +1761,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Создать узел (поле, участок, грядку, теплицу и т.д.)
@@ -1712,7 +1790,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Обновить JSON-схему узла
@@ -1730,7 +1808,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Текущий пользователь + список организаций, в которых он состоит
@@ -1755,7 +1833,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Получить культуру по ID
@@ -1780,7 +1858,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Получить сорт по ID
@@ -1804,7 +1882,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список культур (с фильтром по категории)
@@ -1822,7 +1900,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список сезонов организации
@@ -1847,7 +1925,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список сортов культуры
@@ -1872,7 +1950,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Получить позицию склада по ID
@@ -1896,7 +1974,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список позиций склада (опционально — по конкретному складу)
@@ -1920,7 +1998,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: История движений (опционально — по конкретной позиции)
@@ -1938,7 +2016,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список складов организации
@@ -1963,7 +2041,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Получить задачу по ID
@@ -1987,7 +2065,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Таймлайн операций/задач (по циклу или общий по ферме)
@@ -2011,7 +2089,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список зафиксированных агрономических операций
@@ -2035,7 +2113,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список задач фермы (опционально — по циклу выращивания)
@@ -2060,7 +2138,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Получить размещение по ID (с кодом физического узла)
@@ -2085,7 +2163,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: 'Получить один цикл выращивания (сводка: площадь, посажено, собрано)'
@@ -2103,7 +2181,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Справочник допустимых статусов/стадий/методов цикла выращивания (для
@@ -2122,7 +2200,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список всех размещений организации
@@ -2140,7 +2218,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Список циклов выращивания, сгруппированных по культуре, с аллокациями
@@ -2166,7 +2244,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: 'Сводка по одному циклу: занятая площадь, посажено, собрано'
@@ -2191,7 +2269,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Получить узел вместе с поддеревом
@@ -2209,7 +2287,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-array_productionunit_DTO'
       security:
       - BearerAuth: []
       summary: Список корневых узлов организации (с вложенными деревьями)
@@ -2232,11 +2310,11 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       summary: Вход, выдаёт access/refresh токены
       tags:
       - auth
@@ -2256,7 +2334,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       security:
       - BearerAuth: []
       summary: Выход (текущая реализация — заглушка, blacklist токенов не ведётся)
@@ -2283,7 +2361,7 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.CommandResponse'
+            $ref: '#/definitions/response.CommandResponse-any'
       summary: Регистрация нового пользователя
       tags:
       - auth

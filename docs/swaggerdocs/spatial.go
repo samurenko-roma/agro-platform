@@ -11,10 +11,11 @@ var (
 	_ = productionunitCmd.UpdateCommand{}
 	_ = productionunitCmd.ConfigureCommand{}
 	_ = productionunitCmd.ArchiveCommand{}
+	_ = productionunitQuery.DTO{}
 
 	_ = productionunitQuery.GetOneQuery{}
 
-	_ = response.CommandResponse{}
+	_ = response.CommandResponse[any, any]{}
 )
 
 // docCreateProductionUnit godoc
@@ -25,8 +26,8 @@ var (
 // @Produce json
 // @Security BearerAuth
 // @Param request body productionunitCmd.CreateCommand true "Параметры узла"
-// @Success 200 {object} response.CommandResponse
-// @Failure 400 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 400 {object} response.CommandResponse[any]
 // @Router /api/commands/spatial.create_production_unit [post]
 func docCreateProductionUnit() {}
 
@@ -38,7 +39,7 @@ func docCreateProductionUnit() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body productionunitCmd.UpdateCommand true "ID узла и схема"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/spatial.update_production_unit [post]
 func docUpdateProductionUnit() {}
 
@@ -50,7 +51,7 @@ func docUpdateProductionUnit() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body productionunitCmd.ConfigureCommand true "ID родителя и схема раскладки"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/spatial.configure_production_unit [post]
 func docConfigureProductionUnit() {}
 
@@ -62,8 +63,8 @@ func docConfigureProductionUnit() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body productionunitCmd.ArchiveCommand true "ID узла"
-// @Success 200 {object} response.CommandResponse
-// @Failure 409 {object} response.CommandResponse "есть неархивные дети"
+// @Success 200 {object} response.CommandResponse[any]
+// @Failure 409 {object} response.CommandResponse[any] "есть неархивные дети"
 // @Router /api/commands/spatial.archive_production_unit [post]
 func docArchiveProductionUnit() {}
 
@@ -75,7 +76,7 @@ func docArchiveProductionUnit() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body productionunitQuery.GetOneQuery true "ID узла"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/spatial.get_production_unit [post]
 func docGetProductionUnit() {}
 
@@ -86,6 +87,6 @@ func docGetProductionUnit() {}
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[[]productionunitQuery.DTO, nil]
 // @Router /api/queries/spatial.list_production_units [post]
 func docListProductionUnits() {}

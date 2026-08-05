@@ -15,7 +15,7 @@ var (
 	_ = taskQuery.GetOneQuery{}
 	_ = opCmd.RecordOperationCommand{}
 	_ = opQuery.ListQuery{}
-	_ = response.CommandResponse{}
+	_ = response.CommandResponse[any]{}
 )
 
 // docCreateTask godoc
@@ -26,7 +26,7 @@ var (
 // @Produce json
 // @Security BearerAuth
 // @Param request body taskCmd.CreateTaskCommand true "Заголовок, приоритет, привязка к циклу/узлу (опционально)"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/operations.create_task [post]
 func docCreateTask() {}
 
@@ -38,7 +38,7 @@ func docCreateTask() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body taskCmd.AssignTaskCommand true "ID задачи, ID пользователя"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/operations.assign_task [post]
 func docAssignTask() {}
 
@@ -50,7 +50,7 @@ func docAssignTask() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body taskCmd.TaskIDCommand true "ID задачи"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/operations.start_task [post]
 func docStartTask() {}
 
@@ -62,7 +62,7 @@ func docStartTask() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body taskCmd.TaskIDCommand true "ID задачи"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/operations.complete_task [post]
 func docCompleteTask() {}
 
@@ -74,7 +74,7 @@ func docCompleteTask() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body taskCmd.TaskIDCommand true "ID задачи"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/operations.cancel_task [post]
 func docCancelTask() {}
 
@@ -86,7 +86,7 @@ func docCancelTask() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body opCmd.RecordOperationCommand true "Тип операции, привязка к узлу/циклу, произвольный payload"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/commands/operations.record_operation [post]
 func docRecordOperation() {}
 
@@ -98,7 +98,7 @@ func docRecordOperation() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body taskQuery.GetOneQuery true "ID задачи"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/operations.get_task [post]
 func docGetTask() {}
 
@@ -110,7 +110,7 @@ func docGetTask() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body taskQuery.ListQuery false "growingCycleId — опционально"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/operations.list_tasks [post]
 func docListTasks() {}
 
@@ -122,7 +122,7 @@ func docListTasks() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body tlQuery.GetQuery false "growingCycleId — опционально, иначе общий таймлайн фермы"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/operations.get_timeline [post]
 func docGetTimeline() {}
 
@@ -134,6 +134,6 @@ func docGetTimeline() {}
 // @Produce json
 // @Security BearerAuth
 // @Param request body opQuery.ListQuery false "growingCycleId — опционально"
-// @Success 200 {object} response.CommandResponse
+// @Success 200 {object} response.CommandResponse[any]
 // @Router /api/queries/operations.list_operations [post]
 func docListOperations() {}
