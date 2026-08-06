@@ -5,12 +5,12 @@ import (
 	"errors"
 
 	command "github.com/samurenkoroma/agro-platform/internal/application/commands"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 	weatherlocation "github.com/samurenkoroma/agro-platform/internal/domain/weather/aggregate/weather_location"
 	weatherrepo "github.com/samurenkoroma/agro-platform/internal/domain/weather/repository"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 

@@ -3,12 +3,12 @@ package variety
 import (
 	"context"
 
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	variety "github.com/samurenkoroma/agro-platform/internal/domain/agronomy/aggregate/variety"
 	agronomy "github.com/samurenkoroma/agro-platform/internal/domain/agronomy/repository"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 

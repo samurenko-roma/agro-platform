@@ -5,14 +5,24 @@ import (
 	"errors"
 
 	command "github.com/samurenkoroma/agro-platform/internal/application/commands"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 	spatial "github.com/samurenkoroma/agro-platform/internal/domain/spatial/repository"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 
+// Update production unit
+// @Summary Обновить схему узла
+// @Tags spatial[schema]
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body UpdateCommand true "ID узла и схема"
+// @Success 200 {object} response.SuccessResponse{data=response.IdResponse}
+// @Router /api/commands/spatial.update_production_unit [post]
+func docUpdateProductionUnit() {}
 func (h *Handler) Update(ctx context.Context, payload any) (any, error) {
 	cmd, ok := payload.(*UpdateCommand)
 	if !ok {

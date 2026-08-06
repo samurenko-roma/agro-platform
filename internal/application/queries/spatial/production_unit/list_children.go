@@ -19,6 +19,14 @@ type ListChildrenQuery struct {
 	ParentID string `json:"parentId" validate:"required"`
 }
 
+// Ask Список детских узлов
+// @Summary Список детских узлов
+// @Tags spatial
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.SuccessResponse{data=[]productionunit.DTO}
+// @Router /api/queries/spatial.get_production_unit_children [post]
 func (h *listChildrenHandler) Ask(ctx context.Context, payload any) (any, error) {
 	q, ok := payload.(*ListChildrenQuery)
 	if !ok {

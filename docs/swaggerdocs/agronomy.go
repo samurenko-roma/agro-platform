@@ -20,7 +20,7 @@ var (
 	_ = getvariety.Query{}
 	_ = listvarieties.Query{}
 
-	_ = response.CommandResponse{}
+	_ = response.CommandResponse[any]{}
 )
 
 // docCreateCrop godoc

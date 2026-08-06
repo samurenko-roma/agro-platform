@@ -10,7 +10,7 @@ import (
 type CreateCommand struct {
 	Type         pu.ProductionUnitType `json:"type" validate:"required"`
 	ParentID     *vo.ID                `json:"parentId,omitempty"`
-	Capabilities []string              `json:"capabilities,omitempty"`
+	Capabilities []string              `json:"capabilities,omitempty" validate:"omitempty,oneof=soil irrigation fertigation drainage hydroponic aeroponic nutrientControl lighting climateControl sensorSupport automation slotBased mobile"`
 	Name         string                `json:"name" validate:"required"`
 	Dimensions   *pu.Dimensions        `json:"dimensions,omitempty"`
 	Geometry     *vo.Geometry          `json:"geometry,omitempty"`

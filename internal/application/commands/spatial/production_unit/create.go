@@ -5,18 +5,28 @@ import (
 	"errors"
 
 	command "github.com/samurenkoroma/agro-platform/internal/application/commands"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 	pu "github.com/samurenkoroma/agro-platform/internal/domain/spatial/aggregate/production_unit"
 	spatial "github.com/samurenkoroma/agro-platform/internal/domain/spatial/repository"
 	topology "github.com/samurenkoroma/agro-platform/internal/domain/spatial/service"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 
 var topologyRules topology.TopologyRules = topology.DefaultTopology{}
 
+// Create production unit
+// @Summary Создать узел
+// @Tags spatial
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body CreateCommand true "Параметры узла"
+// @Success 200 {object} response.SuccessResponse{data=response.IdResponse}
+// @Failure 400 {object} response.ErrResponse "VALIDATION_ERROR"
+// @Router /api/commands/spatial.create_production_unit [post]
 func (h *Handler) Create(ctx context.Context, payload any) (any, error) {
 	cmd, ok := payload.(*CreateCommand)
 	if !ok {

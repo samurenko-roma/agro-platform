@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	allocationCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/production/allocation"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/testutil"
 )
 

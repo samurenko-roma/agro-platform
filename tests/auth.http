@@ -1,7 +1,7 @@
 POST http://{{host}}/auth/register
 Content-Type: application/json
 
-{"email":"dev@agro.com", "username": "awdawd","password":"admin123"}
+{"email":"dewawawdv@agro.com", "username": "romaawd","password":"admin123"}
 
 ###
 POST http://{{host}}/auth/login

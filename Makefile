@@ -115,8 +115,8 @@ desc:
 
 swagger:
 	swag init \
-		-g general.go \
-		-d docs/swaggerdocs \
+		-g main.go \
+		-d cmd/api,internal/application/commands,internal/application/queries \
 		--parseDependency \
 		--parseInternal \
         --parseDependencyLevel 3 \

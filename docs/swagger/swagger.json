@@ -1,1165 +1,13 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "CQRS-style API. У каждой команды/запроса — свой путь вида\n/api/commands/{name} или /api/queries/{name}, тело =\ndata. Тот же результат — POST /api/commands или\n/api/queries с конвертом {\"command\"/\"query\": \"\u003cname\u003e\",\n\"data\": {...}}.",
+        "description": "CQRS-style API. У каждой команды/запроса — свой путь вида\n/api/commands/{name} или /api/queries/{name}, тело = data.",
         "title": "Agro Platform API",
         "contact": {},
         "version": "1.0"
     },
     "host": "localhost:8080",
     "paths": {
-        "/api/commands/account.create_organization": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Можно вызвать напрямую этим путём (тело = data), либо через POST /api/commands с конвертом {\"command\": \"account.create_organization\", \"data\": {...}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "account"
-                ],
-                "summary": "Создать организацию (ферму/хозяйство), пользователь становится владельцем",
-                "parameters": [
-                    {
-                        "description": "Название организации",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/organization.CreateOrganizationCmd"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-dto_UserOrganizationInfo"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/account.switch_organization": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Можно вызвать напрямую этим путём (тело = data), либо через POST /api/commands с конвертом {\"command\": \"account.switch_organization\", \"data\": {...}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "account"
-                ],
-                "summary": "Переключиться на другую организацию (перевыпускает JWT с новым organization_id)",
-                "parameters": [
-                    {
-                        "description": "ID организации, в которой есть членство",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/organization.SwitchOrganizationCmd"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-organization_SwitchOrganizationResult"
-                        }
-                    },
-                    "403": {
-                        "description": "нет членства в организации",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/agronomy.create_crop": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"agronomy.create_crop\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Создать культуру в справочнике (Crop) — биология вида: температуры, GDD, водопотребление",
-                "parameters": [
-                    {
-                        "description": "Название, категория, семейство, агрономический профиль",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/crop.CreateCropCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "409": {
-                        "description": "культура с таким именем уже существует",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/agronomy.create_season": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"agronomy.create_season\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Создать агрономический сезон (период планирования)",
-                "parameters": [
-                    {
-                        "description": "Название, даты начала/конца, статус",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/season.CreateSeasonCmd"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/agronomy.create_variety": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"agronomy.create_variety\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Создать сорт культуры (Variety) — конкретный коммерческий сорт с зрелостью/спейсингом",
-                "parameters": [
-                    {
-                        "description": "Название, ID культуры, дни до созревания",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/variety.CreateVarietyCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "404": {
-                        "description": "культура не найдена",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "409": {
-                        "description": "сорт с таким именем уже существует у этой культуры",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.archive_warehouse": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.archive_warehouse\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Архивировать склад",
-                "parameters": [
-                    {
-                        "description": "ID склада",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/warehouse.ArchiveWarehouseCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.consume": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.consume\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Списать зарезервированное (реальный расход)",
-                "parameters": [
-                    {
-                        "description": "ID позиции, количество, ссылка (тип+ID)",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.ConsumeCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "409": {
-                        "description": "недостаточно зарезервированного остатка",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.create_item": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.create_item\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Создать позицию склада (семена, удобрения, субстрат и т.д.)",
-                "parameters": [
-                    {
-                        "description": "Название, тип, единица измерения, склад (опционально)",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.CreateItemCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.create_warehouse": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.create_warehouse\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Создать склад",
-                "parameters": [
-                    {
-                        "description": "Название, код (опционально)",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/warehouse.CreateWarehouseCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.mark_lost": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.mark_lost\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Списать позицию как утраченную (порча, просыпано и т.д.)",
-                "parameters": [
-                    {
-                        "description": "ID позиции, количество, примечание",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.MarkLostCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.receive": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.receive\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Оприходовать поступление на склад",
-                "parameters": [
-                    {
-                        "description": "ID позиции, количество, примечание",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.ReceiveCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.reserve": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.reserve\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Зарезервировать позицию (например, под цикл выращивания)",
-                "parameters": [
-                    {
-                        "description": "ID позиции, количество, ссылка (тип+ID)",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.ReserveCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "409": {
-                        "description": "недостаточно свободного остатка",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/inventory.transfer": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"inventory.transfer\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Переместить позицию между складами",
-                "parameters": [
-                    {
-                        "description": "ID позиции, количество, ID складов отправитель/получатель",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.TransferCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/operations.assign_task": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"operations.assign_task\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Назначить задачу исполнителю",
-                "parameters": [
-                    {
-                        "description": "ID задачи, ID пользователя",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.AssignTaskCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/operations.cancel_task": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"operations.cancel_task\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Отменить задачу (→ CANCELLED)",
-                "parameters": [
-                    {
-                        "description": "ID задачи",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.TaskIDCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/operations.complete_task": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"operations.complete_task\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Завершить задачу (→ DONE)",
-                "parameters": [
-                    {
-                        "description": "ID задачи",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.TaskIDCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/operations.create_task": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"operations.create_task\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Создать задачу (наряд на выполнение работ)",
-                "parameters": [
-                    {
-                        "description": "Заголовок, приоритет, привязка к циклу/узлу (опционально)",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.CreateTaskCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/operations.record_operation": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"operations.record_operation\", \"data\": \u003cтело ниже\u003e}. Автоматически добавляется в таймлайн цикла/фермы.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Зафиксировать агрономическую операцию (полив, удобрение, обработка и т.д.)",
-                "parameters": [
-                    {
-                        "description": "Тип операции, привязка к узлу/циклу, произвольный payload",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/operationevent.RecordOperationCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/operations.start_task": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"operations.start_task\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Взять задачу в работу (TODO → IN_PROGRESS)",
-                "parameters": [
-                    {
-                        "description": "ID задачи",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.TaskIDCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.allocate_production_unit": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.allocate_production_unit\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Разместить (доп.) цикл выращивания на физическом узле",
-                "parameters": [
-                    {
-                        "description": "ID цикла, ID узла, площадь",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/allocation.AllocateProductionUnitCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "404": {
-                        "description": "цикл не найден в вашей организации",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.change_allocation": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.change_allocation\", \"data\": \u003cтело ниже\u003e}. При смене узла старый освобождается, новый занимается — уведомление уходит в Spatial автоматически.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Изменить размещение (площадь/даты, либо перенести на другой узел)",
-                "parameters": [
-                    {
-                        "description": "ID размещения, новые параметры",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/allocation.ChangeAllocationCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.create_cycle": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.create_cycle\", \"data\": \u003cтело ниже\u003e}. Для регистрации + сразу размещения на узлах см. production.start_cycle.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Зарегистрировать цикл выращивания без немедленного размещения",
-                "parameters": [
-                    {
-                        "description": "Культура, сорт, протокол, метод",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/growingcycle.CreateCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.harvest_change": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.harvest_change\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Изменить ранее зарегистрированный сбор урожая",
-                "parameters": [
-                    {
-                        "description": "ID харвеста, новые дата/количество",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/harvest.ChangeHarvestCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.harvest_register": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.harvest_register\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Зарегистрировать сбор урожая",
-                "parameters": [
-                    {
-                        "description": "ID цикла, дата, количество",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/harvest.RegisterHarvestCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "404": {
-                        "description": "цикл не найден в вашей организации",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.planting_change": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.planting_change\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Изменить ранее зарегистрированный посев",
-                "parameters": [
-                    {
-                        "description": "ID посева, новые дата/количество",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/planting.ChangePlantingCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.planting_register": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.planting_register\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Зарегистрировать акт посева/посадки",
-                "parameters": [
-                    {
-                        "description": "ID цикла, дата, количество",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/planting.RegisterPlantingCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "404": {
-                        "description": "цикл не найден в вашей организации",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.release_allocation": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.release_allocation\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Завершить размещение (освободить физический узел)",
-                "parameters": [
-                    {
-                        "description": "ID размещения, дата освобождения (опционально — по умолчанию сейчас)",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/allocation.ReleaseAllocationCommand"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "409": {
-                        "description": "уже освобождено",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/commands/production.start_cycle": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"production.start_cycle\", \"data\": \u003cтело ниже\u003e}. allocations — обязателен и непуст: без единого размещения это просто production.create_cycle. Статус цикла всегда становится Active, клиент его не выбирает.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Создать цикл выращивания И сразу разместить его на физических узлах (+опционально посевы)",
-                "parameters": [
-                    {
-                        "description": "Культура, сорт, метод, обязательные allocations, опциональные plantings",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/growingcycle.StartGrowingCycleCMD"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
         "/api/commands/spatial.archive_production_unit": {
             "post": {
                 "security": [
@@ -1167,7 +15,6 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"spatial.archive_production_unit\", \"data\": \u003cтело ниже\u003e}",
                 "consumes": [
                     "application/json"
                 ],
@@ -1193,13 +40,31 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Узел не найден",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
                         }
                     },
                     "409": {
-                        "description": "есть неархивные дети",
+                        "description": "Есть неархивные дети",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "$ref": "#/definitions/response.ErrResponse"
                         }
                     }
                 }
@@ -1212,7 +77,6 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"spatial.configure_production_unit\", \"data\": \u003cтело ниже\u003e}",
                 "consumes": [
                     "application/json"
                 ],
@@ -1222,7 +86,7 @@
                 "tags": [
                     "spatial"
                 ],
-                "summary": "Сгенерировать дочерние узлы по схеме (например, грядки в теплице)",
+                "summary": "Сгенерировать схему узла",
                 "parameters": [
                     {
                         "description": "ID родителя и схема раскладки",
@@ -1238,7 +102,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "VALIDATION_ERROR",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
                         }
                     }
                 }
@@ -1251,7 +133,6 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"spatial.create_production_unit\", \"data\": \u003cтело ниже\u003e}",
                 "consumes": [
                     "application/json"
                 ],
@@ -1261,7 +142,7 @@
                 "tags": [
                     "spatial"
                 ],
-                "summary": "Создать узел (поле, участок, грядку, теплицу и т.д.)",
+                "summary": "Создать узел",
                 "parameters": [
                     {
                         "description": "Параметры узла",
@@ -1277,13 +158,25 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "VALIDATION_ERROR",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "$ref": "#/definitions/response.ErrResponse"
                         }
                     }
                 }
@@ -1296,7 +189,6 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Реальный вызов: POST /api/commands, {\"command\": \"spatial.update_production_unit\", \"data\": \u003cтело ниже\u003e}",
                 "consumes": [
                     "application/json"
                 ],
@@ -1304,9 +196,9 @@
                     "application/json"
                 ],
                 "tags": [
-                    "spatial"
+                    "spatial[schema]"
                 ],
-                "summary": "Обновить JSON-схему узла",
+                "summary": "Обновить схему узла",
                 "parameters": [
                     {
                         "description": "ID узла и схема",
@@ -1322,715 +214,19 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/account.me": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Можно вызвать напрямую этим путём (тело = data), либо через POST /api/queries с конвертом {\"query\": \"account.me\", \"data\": {...}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "account"
-                ],
-                "summary": "Текущий пользователь + список организаций, в которых он состоит",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/agronomy.get_crop": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"agronomy.get_crop\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Получить культуру по ID",
-                "parameters": [
-                    {
-                        "description": "ID культуры",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/getcrop.Query"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/agronomy.get_variety": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"agronomy.get_variety\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Получить сорт по ID",
-                "parameters": [
-                    {
-                        "description": "ID сорта",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/getvariety.Query"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/agronomy.list_crops": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"agronomy.list_crops\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Список культур (с фильтром по категории)",
-                "parameters": [
-                    {
-                        "description": "Фильтр по категориям/поиску (опционально)",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/listcrops.Query"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/agronomy.list_seasons": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"agronomy.list_seasons\", \"data\": {}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Список сезонов организации",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/agronomy.list_varieties": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"agronomy.list_varieties\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "agronomy"
-                ],
-                "summary": "Список сортов культуры",
-                "parameters": [
-                    {
-                        "description": "ID культуры",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/listvarieties.Query"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/inventory.get_item": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"inventory.get_item\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Получить позицию склада по ID",
-                "parameters": [
-                    {
-                        "description": "ID позиции",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/item.GetOneQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/inventory.list_items": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"inventory.list_items\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Список позиций склада (опционально — по конкретному складу)",
-                "parameters": [
-                    {
-                        "description": "warehouseId — опционально",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/item.ListQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/inventory.list_movements": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"inventory.list_movements\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "История движений (опционально — по конкретной позиции)",
-                "parameters": [
-                    {
-                        "description": "itemId — опционально",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/movement.ListQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/inventory.list_warehouses": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"inventory.list_warehouses\", \"data\": {}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "inventory"
-                ],
-                "summary": "Список складов организации",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/operations.get_task": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"operations.get_task\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Получить задачу по ID",
-                "parameters": [
-                    {
-                        "description": "ID задачи",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/task.GetOneQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/operations.get_timeline": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"operations.get_timeline\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Таймлайн операций/задач (по циклу или общий по ферме)",
-                "parameters": [
-                    {
-                        "description": "growingCycleId — опционально, иначе общий таймлайн фермы",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/timeline.GetQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/operations.list_operations": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"operations.list_operations\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Список зафиксированных агрономических операций",
-                "parameters": [
-                    {
-                        "description": "growingCycleId — опционально",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/operationevent.ListQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/operations.list_tasks": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"operations.list_tasks\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "operations"
-                ],
-                "summary": "Список задач фермы (опционально — по циклу выращивания)",
-                "parameters": [
-                    {
-                        "description": "growingCycleId — опционально",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/task.ListQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/production.get_allocation": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"production.get_allocation\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Получить размещение по ID (с кодом физического узла)",
-                "parameters": [
-                    {
-                        "description": "ID размещения",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/allocation.GetOneQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/production.get_growing_cycle": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"production.get_growing_cycle\", \"data\": \u003cтело ниже\u003e}. Сейчас идентично production.summary_growing_cycles.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Получить один цикл выращивания (сводка: площадь, посажено, собрано)",
-                "parameters": [
-                    {
-                        "description": "ID цикла",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/growingcycle.GetOneQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/production.helpers": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"production.helpers\", \"data\": {}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Справочник допустимых статусов/стадий/методов цикла выращивания (для выпадающих списков UI)",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/production.list_allocations": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"production.list_allocations\", \"data\": {}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Список всех размещений организации",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/production.list_growing_cycles": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"production.list_growing_cycles\", \"data\": {}}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Список циклов выращивания, сгруппированных по культуре, с аллокациями и прогрессом",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/queries/production.summary_growing_cycles": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"production.summary_growing_cycles\", \"data\": \u003cтело ниже\u003e}",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "production"
-                ],
-                "summary": "Сводка по одному циклу: занятая площадь, посажено, собрано",
-                "parameters": [
-                    {
-                        "description": "ID цикла",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/growingcycle.SummaryQuery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -2043,7 +239,6 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"spatial.get_production_unit\", \"data\": \u003cтело ниже\u003e}",
                 "consumes": [
                     "application/json"
                 ],
@@ -2069,7 +264,61 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/productionunit.DTO"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/queries/spatial.get_production_unit_children": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "spatial"
+                ],
+                "summary": "Список детских узлов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/productionunit.DTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -2082,7 +331,6 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"spatial.list_production_units\", \"data\": {}}",
                 "consumes": [
                     "application/json"
                 ],
@@ -2097,83 +345,22 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-array_productionunit_DTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/login": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Вход, выдаёт access/refresh токены",
-                "parameters": [
-                    {
-                        "description": "Email и пароль",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/auth.LoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/logout": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "auth"
-                ],
-                "summary": "Выход (текущая реализация — заглушка, blacklist токенов не ведётся)",
-                "parameters": [
-                    {
-                        "description": "Refresh-токен",
-                        "name": "request",
-                        "in": "body",
-                        "schema": {
-                            "$ref": "#/definitions/auth.LogoutRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/productionunit.DTO"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -2206,13 +393,25 @@
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/auth.RegisterResponse"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/auth.RegisterResponse"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/response.CommandResponse-any"
+                            "$ref": "#/definitions/response.ErrResponse"
                         }
                     }
                 }
@@ -2220,89 +419,6 @@
         }
     },
     "definitions": {
-        "allocation.AllocateProductionUnitCommand": {
-            "type": "object",
-            "required": [
-                "area",
-                "cycleID",
-                "productionUnitID"
-            ],
-            "properties": {
-                "area": {
-                    "type": "number"
-                },
-                "cycleID": {
-                    "type": "string"
-                },
-                "productionUnitID": {
-                    "type": "string"
-                },
-                "startedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "allocation.ChangeAllocationCommand": {
-            "type": "object",
-            "properties": {
-                "area": {
-                    "type": "number"
-                },
-                "endedAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "productionUnitID": {
-                    "type": "string"
-                },
-                "startedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "allocation.GetOneQuery": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "allocation.ReleaseAllocationCommand": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "released_at": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.LoginRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                }
-            }
-        },
-        "auth.LogoutRequest": {
-            "type": "object",
-            "properties": {
-                "refresh_token": {
-                    "type": "string"
-                }
-            }
-        },
         "auth.RegisterRequest": {
             "type": "object",
             "properties": {
@@ -2346,675 +462,6 @@
                 },
                 "username": {
                     "type": "string"
-                }
-            }
-        },
-        "crop.AgronomyProfile": {
-            "type": "object",
-            "properties": {
-                "lightRequirement": {
-                    "$ref": "#/definitions/crop.LightRequirement"
-                },
-                "maturity": {
-                    "$ref": "#/definitions/valueobject.Maturity"
-                },
-                "phenophaseGDD": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/crop.PhenophaseGDD"
-                    }
-                },
-                "thermalRequirements": {
-                    "$ref": "#/definitions/crop.ThermalRequirements"
-                },
-                "tolerance": {
-                    "$ref": "#/definitions/crop.Tolerance"
-                },
-                "waterRequirement": {
-                    "$ref": "#/definitions/crop.WaterRequirement"
-                }
-            }
-        },
-        "crop.CreateCropCommand": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "agronomy": {
-                    "$ref": "#/definitions/crop.AgronomyProfile"
-                },
-                "category": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "family": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "crop.LightRequirement": {
-            "type": "object",
-            "properties": {
-                "dayLengthMin": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "dayLengthOpt": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "photoperiodType": {
-                    "type": "string"
-                },
-                "ppfdmin": {
-                    "type": "integer"
-                },
-                "ppfdopt": {
-                    "type": "integer"
-                }
-            }
-        },
-        "crop.PhenophaseGDD": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "description": "\"BBCH-10\"",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "описание фазы",
-                    "type": "string"
-                },
-                "gddrequired": {
-                    "description": "накопленное GDD для достижения",
-                    "type": "number",
-                    "format": "float64"
-                },
-                "isCritical": {
-                    "description": "критическая фаза?",
-                    "type": "boolean"
-                },
-                "name": {
-                    "description": "\"Первый настоящий лист\"",
-                    "type": "string"
-                }
-            }
-        },
-        "crop.ThermalRequirements": {
-            "type": "object",
-            "properties": {
-                "baseTemperature": {
-                    "type": "number",
-                    "format": "float64"
-                },
-                "upperTemperature": {
-                    "type": "number",
-                    "format": "float64"
-                }
-            }
-        },
-        "crop.Tolerance": {
-            "type": "object",
-            "properties": {
-                "humidityMax": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "humidityMin": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "temperatureMax": {
-                    "type": "integer",
-                    "format": "int32"
-                },
-                "temperatureMin": {
-                    "type": "integer",
-                    "format": "int32"
-                }
-            }
-        },
-        "crop.WaterRequirement": {
-            "type": "object",
-            "properties": {
-                "dailyNeedMin": {
-                    "type": "number",
-                    "format": "float64"
-                },
-                "dailyNeedOpt": {
-                    "type": "number",
-                    "format": "float64"
-                }
-            }
-        },
-        "dto.UserOrganizationInfo": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "role": {
-                    "type": "string"
-                },
-                "roleName": {
-                    "type": "string"
-                }
-            }
-        },
-        "getcrop.Query": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "getvariety.Query": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_samurenkoroma_agro-platform_internal_application_commands_production_growing_cycle.AllocationDTO": {
-            "type": "object",
-            "required": [
-                "area",
-                "productionUnitID"
-            ],
-            "properties": {
-                "area": {
-                    "type": "number"
-                },
-                "productionUnitID": {
-                    "type": "string"
-                },
-                "startedAt": {
-                    "type": "string"
-                }
-            }
-        },
-        "growingcycle.CreateCommand": {
-            "type": "object",
-            "required": [
-                "code",
-                "cropID",
-                "method",
-                "name"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "cropID": {
-                    "type": "string"
-                },
-                "method": {
-                    "$ref": "#/definitions/growingcycle.ProductionMethod"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "protocolID": {
-                    "type": "string"
-                },
-                "varietyID": {
-                    "type": "string"
-                }
-            }
-        },
-        "growingcycle.CycleStage": {
-            "type": "string",
-            "enum": [
-                "planning",
-                "germination",
-                "seedling",
-                "vegetative",
-                "flowering",
-                "fruiting",
-                "harvesting",
-                "completed"
-            ],
-            "x-enum-varnames": [
-                "StagePlanning",
-                "StageGermination",
-                "StageSeedling",
-                "StageVegetative",
-                "StageFlowering",
-                "StageFruiting",
-                "StageHarvesting",
-                "StageCompleted"
-            ]
-        },
-        "growingcycle.GetOneQuery": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "growingcycle.PlantingDTO": {
-            "type": "object",
-            "properties": {
-                "plantedAt": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "number"
-                }
-            }
-        },
-        "growingcycle.ProductionMethod": {
-            "type": "string",
-            "enum": [
-                "seedling",
-                "direct_sow"
-            ],
-            "x-enum-varnames": [
-                "ProductionMethodSeedling",
-                "ProductionMethodDirectSow"
-            ]
-        },
-        "growingcycle.StartGrowingCycleCMD": {
-            "type": "object",
-            "required": [
-                "allocations",
-                "code",
-                "cropID",
-                "method",
-                "name"
-            ],
-            "properties": {
-                "allocations": {
-                    "description": "Обязательны: \"запустить\" без единого физического размещения — это\nпросто create_cycle. Если нужно зарегистрировать цикл без размещения,\nиспользуйте production.create_cycle.",
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/github_com_samurenkoroma_agro-platform_internal_application_commands_production_growing_cycle.AllocationDTO"
-                    }
-                },
-                "code": {
-                    "type": "string"
-                },
-                "cropID": {
-                    "type": "string"
-                },
-                "expectedHarvestAt": {
-                    "type": "string"
-                },
-                "method": {
-                    "$ref": "#/definitions/growingcycle.ProductionMethod"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "plantings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/growingcycle.PlantingDTO"
-                    }
-                },
-                "protocolID": {
-                    "type": "string"
-                },
-                "stage": {
-                    "enum": [
-                        "planning",
-                        "germination",
-                        "seedling",
-                        "vegetative",
-                        "flowering",
-                        "fruiting",
-                        "harvesting",
-                        "completed"
-                    ],
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/growingcycle.CycleStage"
-                        }
-                    ]
-                },
-                "varietyID": {
-                    "type": "string"
-                }
-            }
-        },
-        "growingcycle.SummaryQuery": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "harvest.ChangeHarvestCommand": {
-            "type": "object",
-            "properties": {
-                "harvestAt": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "number"
-                }
-            }
-        },
-        "harvest.RegisterHarvestCommand": {
-            "type": "object",
-            "properties": {
-                "cycleID": {
-                    "type": "string"
-                },
-                "harvestAt": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "number"
-                }
-            }
-        },
-        "item.ConsumeCommand": {
-            "type": "object",
-            "required": [
-                "amount",
-                "itemId"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "itemId": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                },
-                "referenceId": {
-                    "type": "string"
-                },
-                "referenceType": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.CreateItemCommand": {
-            "type": "object",
-            "required": [
-                "name",
-                "type",
-                "unit"
-            ],
-            "properties": {
-                "name": {
-                    "type": "string"
-                },
-                "sku": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "unit": {
-                    "type": "string"
-                },
-                "warehouseId": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.GetOneQuery": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "id": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.ListQuery": {
-            "type": "object",
-            "properties": {
-                "warehouseId": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.MarkLostCommand": {
-            "type": "object",
-            "required": [
-                "amount",
-                "itemId"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "itemId": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.ReceiveCommand": {
-            "type": "object",
-            "required": [
-                "amount",
-                "itemId"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "itemId": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.ReserveCommand": {
-            "type": "object",
-            "required": [
-                "amount",
-                "itemId"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "itemId": {
-                    "type": "string"
-                },
-                "referenceId": {
-                    "type": "string"
-                },
-                "referenceType": {
-                    "type": "string"
-                }
-            }
-        },
-        "item.TransferCommand": {
-            "type": "object",
-            "required": [
-                "amount",
-                "fromWarehouseId",
-                "itemId",
-                "toWarehouseId"
-            ],
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "fromWarehouseId": {
-                    "type": "string"
-                },
-                "itemId": {
-                    "type": "string"
-                },
-                "note": {
-                    "type": "string"
-                },
-                "toWarehouseId": {
-                    "type": "string"
-                }
-            }
-        },
-        "jwt.TokenPair": {
-            "type": "object",
-            "properties": {
-                "accessToken": {
-                    "type": "string"
-                },
-                "expiresIn": {
-                    "type": "integer"
-                },
-                "refreshToken": {
-                    "type": "string"
-                }
-            }
-        },
-        "listcrops.Query": {
-            "type": "object",
-            "properties": {
-                "archived": {
-                    "type": "boolean"
-                },
-                "categories": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "search": {
-                    "type": "string"
-                }
-            }
-        },
-        "listvarieties.Query": {
-            "type": "object",
-            "properties": {
-                "cropId": {
-                    "description": "tomato, eggplant, cucumber",
-                    "type": "string"
-                }
-            }
-        },
-        "movement.ListQuery": {
-            "type": "object",
-            "properties": {
-                "itemId": {
-                    "type": "string"
-                }
-            }
-        },
-        "operationevent.ListQuery": {
-            "type": "object",
-            "properties": {
-                "growingCycleId": {
-                    "type": "string"
-                }
-            }
-        },
-        "operationevent.RecordOperationCommand": {
-            "type": "object",
-            "required": [
-                "type"
-            ],
-            "properties": {
-                "growingCycleId": {
-                    "type": "string"
-                },
-                "payload": {
-                    "type": "object",
-                    "additionalProperties": {}
-                },
-                "productionUnitId": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "organization.CreateOrganizationCmd": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "organization.SwitchOrganizationCmd": {
-            "type": "object",
-            "properties": {
-                "organization_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "organization.SwitchOrganizationResult": {
-            "type": "object",
-            "properties": {
-                "currentOrg": {
-                    "$ref": "#/definitions/dto.UserOrganizationInfo"
-                },
-                "tokenPair": {
-                    "$ref": "#/definitions/jwt.TokenPair"
-                }
-            }
-        },
-        "planting.ChangePlantingCommand": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "planted_at": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "number"
-                }
-            }
-        },
-        "planting.RegisterPlantingCommand": {
-            "type": "object",
-            "properties": {
-                "cycle_id": {
-                    "type": "string"
-                },
-                "planted_at": {
-                    "type": "string"
-                },
-                "quantity": {
-                    "type": "number"
                 }
             }
         },
@@ -3090,7 +537,22 @@
                 "capabilities": {
                     "type": "array",
                     "items": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "soil",
+                            "irrigation",
+                            "fertigation",
+                            "drainage",
+                            "hydroponic",
+                            "aeroponic",
+                            "nutrientControl",
+                            "lighting",
+                            "climateControl",
+                            "sensorSupport",
+                            "automation",
+                            "slotBased",
+                            "mobile"
+                        ]
                     }
                 },
                 "dimensions": {
@@ -3285,55 +747,9 @@
                 }
             }
         },
-        "response.CommandResponse-any": {
+        "response.ErrResponse": {
             "type": "object",
             "properties": {
-                "data": {},
-                "error": {
-                    "$ref": "#/definitions/response.ErrorInfo"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "response.CommandResponse-array_productionunit_DTO": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/productionunit.DTO"
-                    }
-                },
-                "error": {
-                    "$ref": "#/definitions/response.ErrorInfo"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "response.CommandResponse-dto_UserOrganizationInfo": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/dto.UserOrganizationInfo"
-                },
-                "error": {
-                    "$ref": "#/definitions/response.ErrorInfo"
-                },
-                "success": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "response.CommandResponse-organization_SwitchOrganizationResult": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "$ref": "#/definitions/organization.SwitchOrganizationResult"
-                },
                 "error": {
                     "$ref": "#/definitions/response.ErrorInfo"
                 },
@@ -3356,111 +772,20 @@
                 }
             }
         },
-        "season.CreateSeasonCmd": {
+        "response.IdResponse": {
             "type": "object",
-            "required": [
-                "endDate",
-                "name",
-                "startDate",
-                "status"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "endDate": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "startDate": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "task.AssignTaskCommand": {
-            "type": "object",
-            "required": [
-                "taskId",
-                "userId"
-            ],
-            "properties": {
-                "taskId": {
-                    "type": "string"
-                },
-                "userId": {
-                    "type": "string"
-                }
-            }
-        },
-        "task.CreateTaskCommand": {
-            "type": "object",
-            "required": [
-                "title"
-            ],
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "dueDate": {
-                    "type": "string"
-                },
-                "growingCycleId": {
-                    "type": "string"
-                },
-                "operationType": {
-                    "type": "string"
-                },
-                "priority": {
-                    "type": "string"
-                },
-                "productionUnitId": {
-                    "type": "string"
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "task.GetOneQuery": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
             "properties": {
                 "id": {
                     "type": "string"
                 }
             }
         },
-        "task.ListQuery": {
+        "response.SuccessResponse": {
             "type": "object",
             "properties": {
-                "growingCycleId": {
-                    "type": "string"
-                }
-            }
-        },
-        "task.TaskIDCommand": {
-            "type": "object",
-            "required": [
-                "taskId"
-            ],
-            "properties": {
-                "taskId": {
-                    "type": "string"
-                }
-            }
-        },
-        "timeline.GetQuery": {
-            "type": "object",
-            "properties": {
-                "growingCycleId": {
-                    "type": "string"
+                "data": {},
+                "success": {
+                    "type": "boolean"
                 }
             }
         },
@@ -3528,62 +853,6 @@
                 "Polygon",
                 "Point"
             ]
-        },
-        "valueobject.Maturity": {
-            "type": "object",
-            "properties": {
-                "daysToHarvest": {
-                    "type": "integer"
-                },
-                "gddtoHarvest": {
-                    "type": "number",
-                    "format": "float64"
-                }
-            }
-        },
-        "variety.CreateVarietyCommand": {
-            "type": "object",
-            "required": [
-                "cropId",
-                "daysToMaturity",
-                "name"
-            ],
-            "properties": {
-                "cropId": {
-                    "type": "string"
-                },
-                "daysToMaturity": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "warehouse.ArchiveWarehouseCommand": {
-            "type": "object",
-            "required": [
-                "warehouseId"
-            ],
-            "properties": {
-                "warehouseId": {
-                    "type": "string"
-                }
-            }
-        },
-        "warehouse.CreateWarehouseCommand": {
-            "type": "object",
-            "required": [
-                "name"
-            ],
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
         }
     },
     "securityDefinitions": {

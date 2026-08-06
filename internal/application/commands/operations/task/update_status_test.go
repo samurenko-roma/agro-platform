@@ -4,10 +4,10 @@ import (
 	"testing"
 
 	task2 "github.com/samurenkoroma/agro-platform/internal/application/commands/operations/task"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	"github.com/samurenkoroma/agro-platform/internal/domain/operations/aggregate/task"
 	opsrepo "github.com/samurenkoroma/agro-platform/internal/domain/operations/repository"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/testutil"
 )
 

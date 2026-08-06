@@ -59,6 +59,7 @@ func NewUser(email, username, password, firstName, lastName, phone string) (*Use
 
 	now := time.Now()
 	return &User{
+		Role:      RoleClient,
 		ID:        uuid.New().String(),
 		Email:     email,
 		Username:  username,

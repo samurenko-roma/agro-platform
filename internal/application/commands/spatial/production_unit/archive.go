@@ -5,14 +5,26 @@ import (
 	"errors"
 
 	command "github.com/samurenkoroma/agro-platform/internal/application/commands"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 	spatial "github.com/samurenkoroma/agro-platform/internal/domain/spatial/repository"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 
+// Archive production unit
+// @Summary Архивировать узел
+// @Tags spatial
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body ArchiveCommand true "ID узла"
+// @Success 200 {object} response.SuccessResponse{data=response.IdResponse}
+// @Failure 404 {object} response.ErrResponse "Узел не найден"
+// @Failure 409 {object} response.ErrResponse "Есть неархивные дети"
+// @Router /api/commands/spatial.archive_production_unit [post]
+func docArchiveProductionUnit() {}
 func (h *Handler) Archive(ctx context.Context, payload any) (any, error) {
 	cmd, ok := payload.(*ArchiveCommand)
 	if !ok {

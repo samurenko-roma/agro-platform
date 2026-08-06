@@ -1,58 +1,4 @@
 definitions:
-  allocation.AllocateProductionUnitCommand:
-    properties:
-      area:
-        type: number
-      cycleID:
-        type: string
-      productionUnitID:
-        type: string
-      startedAt:
-        type: string
-    required:
-    - area
-    - cycleID
-    - productionUnitID
-    type: object
-  allocation.ChangeAllocationCommand:
-    properties:
-      area:
-        type: number
-      endedAt:
-        type: string
-      id:
-        type: string
-      productionUnitID:
-        type: string
-      startedAt:
-        type: string
-    type: object
-  allocation.GetOneQuery:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  allocation.ReleaseAllocationCommand:
-    properties:
-      id:
-        type: string
-      released_at:
-        type: string
-    type: object
-  auth.LoginRequest:
-    properties:
-      email:
-        type: string
-      password:
-        type: string
-    type: object
-  auth.LogoutRequest:
-    properties:
-      refresh_token:
-        type: string
-    type: object
   auth.RegisterRequest:
     properties:
       email:
@@ -82,461 +28,6 @@ definitions:
         type: string
       username:
         type: string
-    type: object
-  crop.AgronomyProfile:
-    properties:
-      lightRequirement:
-        $ref: '#/definitions/crop.LightRequirement'
-      maturity:
-        $ref: '#/definitions/valueobject.Maturity'
-      phenophaseGDD:
-        items:
-          $ref: '#/definitions/crop.PhenophaseGDD'
-        type: array
-      thermalRequirements:
-        $ref: '#/definitions/crop.ThermalRequirements'
-      tolerance:
-        $ref: '#/definitions/crop.Tolerance'
-      waterRequirement:
-        $ref: '#/definitions/crop.WaterRequirement'
-    type: object
-  crop.CreateCropCommand:
-    properties:
-      agronomy:
-        $ref: '#/definitions/crop.AgronomyProfile'
-      category:
-        type: string
-      description:
-        type: string
-      family:
-        type: string
-      name:
-        type: string
-    required:
-    - name
-    type: object
-  crop.LightRequirement:
-    properties:
-      dayLengthMin:
-        format: int32
-        type: integer
-      dayLengthOpt:
-        format: int32
-        type: integer
-      photoperiodType:
-        type: string
-      ppfdmin:
-        type: integer
-      ppfdopt:
-        type: integer
-    type: object
-  crop.PhenophaseGDD:
-    properties:
-      code:
-        description: '"BBCH-10"'
-        type: string
-      description:
-        description: описание фазы
-        type: string
-      gddrequired:
-        description: накопленное GDD для достижения
-        format: float64
-        type: number
-      isCritical:
-        description: критическая фаза?
-        type: boolean
-      name:
-        description: '"Первый настоящий лист"'
-        type: string
-    type: object
-  crop.ThermalRequirements:
-    properties:
-      baseTemperature:
-        format: float64
-        type: number
-      upperTemperature:
-        format: float64
-        type: number
-    type: object
-  crop.Tolerance:
-    properties:
-      humidityMax:
-        format: int32
-        type: integer
-      humidityMin:
-        format: int32
-        type: integer
-      temperatureMax:
-        format: int32
-        type: integer
-      temperatureMin:
-        format: int32
-        type: integer
-    type: object
-  crop.WaterRequirement:
-    properties:
-      dailyNeedMin:
-        format: float64
-        type: number
-      dailyNeedOpt:
-        format: float64
-        type: number
-    type: object
-  dto.UserOrganizationInfo:
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-      role:
-        type: string
-      roleName:
-        type: string
-    type: object
-  getcrop.Query:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  getvariety.Query:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  github_com_samurenkoroma_agro-platform_internal_application_commands_production_growing_cycle.AllocationDTO:
-    properties:
-      area:
-        type: number
-      productionUnitID:
-        type: string
-      startedAt:
-        type: string
-    required:
-    - area
-    - productionUnitID
-    type: object
-  growingcycle.CreateCommand:
-    properties:
-      code:
-        type: string
-      cropID:
-        type: string
-      method:
-        $ref: '#/definitions/growingcycle.ProductionMethod'
-      name:
-        type: string
-      protocolID:
-        type: string
-      varietyID:
-        type: string
-    required:
-    - code
-    - cropID
-    - method
-    - name
-    type: object
-  growingcycle.CycleStage:
-    enum:
-    - planning
-    - germination
-    - seedling
-    - vegetative
-    - flowering
-    - fruiting
-    - harvesting
-    - completed
-    type: string
-    x-enum-varnames:
-    - StagePlanning
-    - StageGermination
-    - StageSeedling
-    - StageVegetative
-    - StageFlowering
-    - StageFruiting
-    - StageHarvesting
-    - StageCompleted
-  growingcycle.GetOneQuery:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  growingcycle.PlantingDTO:
-    properties:
-      plantedAt:
-        type: string
-      quantity:
-        type: number
-    type: object
-  growingcycle.ProductionMethod:
-    enum:
-    - seedling
-    - direct_sow
-    type: string
-    x-enum-varnames:
-    - ProductionMethodSeedling
-    - ProductionMethodDirectSow
-  growingcycle.StartGrowingCycleCMD:
-    properties:
-      allocations:
-        description: |-
-          Обязательны: "запустить" без единого физического размещения — это
-          просто create_cycle. Если нужно зарегистрировать цикл без размещения,
-          используйте production.create_cycle.
-        items:
-          $ref: '#/definitions/github_com_samurenkoroma_agro-platform_internal_application_commands_production_growing_cycle.AllocationDTO'
-        minItems: 1
-        type: array
-      code:
-        type: string
-      cropID:
-        type: string
-      expectedHarvestAt:
-        type: string
-      method:
-        $ref: '#/definitions/growingcycle.ProductionMethod'
-      name:
-        type: string
-      plantings:
-        items:
-          $ref: '#/definitions/growingcycle.PlantingDTO'
-        type: array
-      protocolID:
-        type: string
-      stage:
-        allOf:
-        - $ref: '#/definitions/growingcycle.CycleStage'
-        enum:
-        - planning
-        - germination
-        - seedling
-        - vegetative
-        - flowering
-        - fruiting
-        - harvesting
-        - completed
-      varietyID:
-        type: string
-    required:
-    - allocations
-    - code
-    - cropID
-    - method
-    - name
-    type: object
-  growingcycle.SummaryQuery:
-    properties:
-      id:
-        type: string
-    type: object
-  harvest.ChangeHarvestCommand:
-    properties:
-      harvestAt:
-        type: string
-      id:
-        type: string
-      quantity:
-        type: number
-    type: object
-  harvest.RegisterHarvestCommand:
-    properties:
-      cycleID:
-        type: string
-      harvestAt:
-        type: string
-      quantity:
-        type: number
-    type: object
-  item.ConsumeCommand:
-    properties:
-      amount:
-        type: number
-      itemId:
-        type: string
-      note:
-        type: string
-      referenceId:
-        type: string
-      referenceType:
-        type: string
-    required:
-    - amount
-    - itemId
-    type: object
-  item.CreateItemCommand:
-    properties:
-      name:
-        type: string
-      sku:
-        type: string
-      type:
-        type: string
-      unit:
-        type: string
-      warehouseId:
-        type: string
-    required:
-    - name
-    - type
-    - unit
-    type: object
-  item.GetOneQuery:
-    properties:
-      id:
-        type: string
-    required:
-    - id
-    type: object
-  item.ListQuery:
-    properties:
-      warehouseId:
-        type: string
-    type: object
-  item.MarkLostCommand:
-    properties:
-      amount:
-        type: number
-      itemId:
-        type: string
-      note:
-        type: string
-    required:
-    - amount
-    - itemId
-    type: object
-  item.ReceiveCommand:
-    properties:
-      amount:
-        type: number
-      itemId:
-        type: string
-      note:
-        type: string
-    required:
-    - amount
-    - itemId
-    type: object
-  item.ReserveCommand:
-    properties:
-      amount:
-        type: number
-      itemId:
-        type: string
-      referenceId:
-        type: string
-      referenceType:
-        type: string
-    required:
-    - amount
-    - itemId
-    type: object
-  item.TransferCommand:
-    properties:
-      amount:
-        type: number
-      fromWarehouseId:
-        type: string
-      itemId:
-        type: string
-      note:
-        type: string
-      toWarehouseId:
-        type: string
-    required:
-    - amount
-    - fromWarehouseId
-    - itemId
-    - toWarehouseId
-    type: object
-  jwt.TokenPair:
-    properties:
-      accessToken:
-        type: string
-      expiresIn:
-        type: integer
-      refreshToken:
-        type: string
-    type: object
-  listcrops.Query:
-    properties:
-      archived:
-        type: boolean
-      categories:
-        items:
-          type: string
-        type: array
-      search:
-        type: string
-    type: object
-  listvarieties.Query:
-    properties:
-      cropId:
-        description: tomato, eggplant, cucumber
-        type: string
-    type: object
-  movement.ListQuery:
-    properties:
-      itemId:
-        type: string
-    type: object
-  operationevent.ListQuery:
-    properties:
-      growingCycleId:
-        type: string
-    type: object
-  operationevent.RecordOperationCommand:
-    properties:
-      growingCycleId:
-        type: string
-      payload:
-        additionalProperties: {}
-        type: object
-      productionUnitId:
-        type: string
-      type:
-        type: string
-    required:
-    - type
-    type: object
-  organization.CreateOrganizationCmd:
-    properties:
-      name:
-        type: string
-    type: object
-  organization.SwitchOrganizationCmd:
-    properties:
-      organization_id:
-        type: string
-    type: object
-  organization.SwitchOrganizationResult:
-    properties:
-      currentOrg:
-        $ref: '#/definitions/dto.UserOrganizationInfo'
-      tokenPair:
-        $ref: '#/definitions/jwt.TokenPair'
-    type: object
-  planting.ChangePlantingCommand:
-    properties:
-      id:
-        type: string
-      planted_at:
-        type: string
-      quantity:
-        type: number
-    type: object
-  planting.RegisterPlantingCommand:
-    properties:
-      cycle_id:
-        type: string
-      planted_at:
-        type: string
-      quantity:
-        type: number
     type: object
   productionunit.ArchiveCommand:
     properties:
@@ -585,6 +76,20 @@ definitions:
         $ref: '#/definitions/productionunit.AreaInput'
       capabilities:
         items:
+          enum:
+          - soil
+          - irrigation
+          - fertigation
+          - drainage
+          - hydroponic
+          - aeroponic
+          - nutrientControl
+          - lighting
+          - climateControl
+          - sensorSupport
+          - automation
+          - slotBased
+          - mobile
           type: string
         type: array
       dimensions:
@@ -728,38 +233,8 @@ definitions:
           type: integer
         type: array
     type: object
-  response.CommandResponse-any:
+  response.ErrResponse:
     properties:
-      data: {}
-      error:
-        $ref: '#/definitions/response.ErrorInfo'
-      success:
-        type: boolean
-    type: object
-  response.CommandResponse-array_productionunit_DTO:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/productionunit.DTO'
-        type: array
-      error:
-        $ref: '#/definitions/response.ErrorInfo'
-      success:
-        type: boolean
-    type: object
-  response.CommandResponse-dto_UserOrganizationInfo:
-    properties:
-      data:
-        $ref: '#/definitions/dto.UserOrganizationInfo'
-      error:
-        $ref: '#/definitions/response.ErrorInfo'
-      success:
-        type: boolean
-    type: object
-  response.CommandResponse-organization_SwitchOrganizationResult:
-    properties:
-      data:
-        $ref: '#/definitions/organization.SwitchOrganizationResult'
       error:
         $ref: '#/definitions/response.ErrorInfo'
       success:
@@ -774,76 +249,16 @@ definitions:
       message:
         type: string
     type: object
-  season.CreateSeasonCmd:
-    properties:
-      description:
-        type: string
-      endDate:
-        type: string
-      name:
-        type: string
-      startDate:
-        type: string
-      status:
-        type: string
-    required:
-    - endDate
-    - name
-    - startDate
-    - status
-    type: object
-  task.AssignTaskCommand:
-    properties:
-      taskId:
-        type: string
-      userId:
-        type: string
-    required:
-    - taskId
-    - userId
-    type: object
-  task.CreateTaskCommand:
-    properties:
-      description:
-        type: string
-      dueDate:
-        type: string
-      growingCycleId:
-        type: string
-      operationType:
-        type: string
-      priority:
-        type: string
-      productionUnitId:
-        type: string
-      title:
-        type: string
-    required:
-    - title
-    type: object
-  task.GetOneQuery:
+  response.IdResponse:
     properties:
       id:
         type: string
-    required:
-    - id
     type: object
-  task.ListQuery:
+  response.SuccessResponse:
     properties:
-      growingCycleId:
-        type: string
-    type: object
-  task.TaskIDCommand:
-    properties:
-      taskId:
-        type: string
-    required:
-    - taskId
-    type: object
-  timeline.GetQuery:
-    properties:
-      growingCycleId:
-        type: string
+      data: {}
+      success:
+        type: boolean
     type: object
   valueobject.Coordinates:
     properties:
@@ -889,811 +304,19 @@ definitions:
     - Rect
     - Polygon
     - Point
-  valueobject.Maturity:
-    properties:
-      daysToHarvest:
-        type: integer
-      gddtoHarvest:
-        format: float64
-        type: number
-    type: object
-  variety.CreateVarietyCommand:
-    properties:
-      cropId:
-        type: string
-      daysToMaturity:
-        type: integer
-      name:
-        type: string
-    required:
-    - cropId
-    - daysToMaturity
-    - name
-    type: object
-  warehouse.ArchiveWarehouseCommand:
-    properties:
-      warehouseId:
-        type: string
-    required:
-    - warehouseId
-    type: object
-  warehouse.CreateWarehouseCommand:
-    properties:
-      code:
-        type: string
-      name:
-        type: string
-    required:
-    - name
-    type: object
 host: localhost:8080
 info:
   contact: {}
   description: |-
     CQRS-style API. У каждой команды/запроса — свой путь вида
-    /api/commands/{name} или /api/queries/{name}, тело =
-    data. Тот же результат — POST /api/commands или
-    /api/queries с конвертом {"command"/"query": "<name>",
-    "data": {...}}.
+    /api/commands/{name} или /api/queries/{name}, тело = data.
   title: Agro Platform API
   version: "1.0"
 paths:
-  /api/commands/account.create_organization:
-    post:
-      consumes:
-      - application/json
-      description: 'Можно вызвать напрямую этим путём (тело = data), либо через POST
-        /api/commands с конвертом {"command": "account.create_organization", "data":
-        {...}}'
-      parameters:
-      - description: Название организации
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/organization.CreateOrganizationCmd'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-dto_UserOrganizationInfo'
-      security:
-      - BearerAuth: []
-      summary: Создать организацию (ферму/хозяйство), пользователь становится владельцем
-      tags:
-      - account
-  /api/commands/account.switch_organization:
-    post:
-      consumes:
-      - application/json
-      description: 'Можно вызвать напрямую этим путём (тело = data), либо через POST
-        /api/commands с конвертом {"command": "account.switch_organization", "data":
-        {...}}'
-      parameters:
-      - description: ID организации, в которой есть членство
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/organization.SwitchOrganizationCmd'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-organization_SwitchOrganizationResult'
-        "403":
-          description: нет членства в организации
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Переключиться на другую организацию (перевыпускает JWT с новым organization_id)
-      tags:
-      - account
-  /api/commands/agronomy.create_crop:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "agronomy.create_crop",
-        "data": <тело ниже>}'
-      parameters:
-      - description: Название, категория, семейство, агрономический профиль
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/crop.CreateCropCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "409":
-          description: культура с таким именем уже существует
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: 'Создать культуру в справочнике (Crop) — биология вида: температуры,
-        GDD, водопотребление'
-      tags:
-      - agronomy
-  /api/commands/agronomy.create_season:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "agronomy.create_season",
-        "data": <тело ниже>}'
-      parameters:
-      - description: Название, даты начала/конца, статус
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/season.CreateSeasonCmd'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Создать агрономический сезон (период планирования)
-      tags:
-      - agronomy
-  /api/commands/agronomy.create_variety:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "agronomy.create_variety",
-        "data": <тело ниже>}'
-      parameters:
-      - description: Название, ID культуры, дни до созревания
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/variety.CreateVarietyCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "404":
-          description: культура не найдена
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "409":
-          description: сорт с таким именем уже существует у этой культуры
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Создать сорт культуры (Variety) — конкретный коммерческий сорт с зрелостью/спейсингом
-      tags:
-      - agronomy
-  /api/commands/inventory.archive_warehouse:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.archive_warehouse",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID склада
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/warehouse.ArchiveWarehouseCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Архивировать склад
-      tags:
-      - inventory
-  /api/commands/inventory.consume:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.consume",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID позиции, количество, ссылка (тип+ID)
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/item.ConsumeCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "409":
-          description: недостаточно зарезервированного остатка
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Списать зарезервированное (реальный расход)
-      tags:
-      - inventory
-  /api/commands/inventory.create_item:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.create_item",
-        "data": <тело ниже>}'
-      parameters:
-      - description: Название, тип, единица измерения, склад (опционально)
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/item.CreateItemCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Создать позицию склада (семена, удобрения, субстрат и т.д.)
-      tags:
-      - inventory
-  /api/commands/inventory.create_warehouse:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.create_warehouse",
-        "data": <тело ниже>}'
-      parameters:
-      - description: Название, код (опционально)
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/warehouse.CreateWarehouseCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Создать склад
-      tags:
-      - inventory
-  /api/commands/inventory.mark_lost:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.mark_lost",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID позиции, количество, примечание
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/item.MarkLostCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Списать позицию как утраченную (порча, просыпано и т.д.)
-      tags:
-      - inventory
-  /api/commands/inventory.receive:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.receive",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID позиции, количество, примечание
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/item.ReceiveCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Оприходовать поступление на склад
-      tags:
-      - inventory
-  /api/commands/inventory.reserve:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.reserve",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID позиции, количество, ссылка (тип+ID)
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/item.ReserveCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "409":
-          description: недостаточно свободного остатка
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Зарезервировать позицию (например, под цикл выращивания)
-      tags:
-      - inventory
-  /api/commands/inventory.transfer:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "inventory.transfer",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID позиции, количество, ID складов отправитель/получатель
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/item.TransferCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Переместить позицию между складами
-      tags:
-      - inventory
-  /api/commands/operations.assign_task:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "operations.assign_task",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID задачи, ID пользователя
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/task.AssignTaskCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Назначить задачу исполнителю
-      tags:
-      - operations
-  /api/commands/operations.cancel_task:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "operations.cancel_task",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID задачи
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/task.TaskIDCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Отменить задачу (→ CANCELLED)
-      tags:
-      - operations
-  /api/commands/operations.complete_task:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "operations.complete_task",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID задачи
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/task.TaskIDCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Завершить задачу (→ DONE)
-      tags:
-      - operations
-  /api/commands/operations.create_task:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "operations.create_task",
-        "data": <тело ниже>}'
-      parameters:
-      - description: Заголовок, приоритет, привязка к циклу/узлу (опционально)
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/task.CreateTaskCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Создать задачу (наряд на выполнение работ)
-      tags:
-      - operations
-  /api/commands/operations.record_operation:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "operations.record_operation",
-        "data": <тело ниже>}. Автоматически добавляется в таймлайн цикла/фермы.'
-      parameters:
-      - description: Тип операции, привязка к узлу/циклу, произвольный payload
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/operationevent.RecordOperationCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Зафиксировать агрономическую операцию (полив, удобрение, обработка
-        и т.д.)
-      tags:
-      - operations
-  /api/commands/operations.start_task:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "operations.start_task",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID задачи
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/task.TaskIDCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Взять задачу в работу (TODO → IN_PROGRESS)
-      tags:
-      - operations
-  /api/commands/production.allocate_production_unit:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.allocate_production_unit",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID цикла, ID узла, площадь
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/allocation.AllocateProductionUnitCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "404":
-          description: цикл не найден в вашей организации
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Разместить (доп.) цикл выращивания на физическом узле
-      tags:
-      - production
-  /api/commands/production.change_allocation:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.change_allocation",
-        "data": <тело ниже>}. При смене узла старый освобождается, новый занимается
-        — уведомление уходит в Spatial автоматически.'
-      parameters:
-      - description: ID размещения, новые параметры
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/allocation.ChangeAllocationCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Изменить размещение (площадь/даты, либо перенести на другой узел)
-      tags:
-      - production
-  /api/commands/production.create_cycle:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.create_cycle",
-        "data": <тело ниже>}. Для регистрации + сразу размещения на узлах см. production.start_cycle.'
-      parameters:
-      - description: Культура, сорт, протокол, метод
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/growingcycle.CreateCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Зарегистрировать цикл выращивания без немедленного размещения
-      tags:
-      - production
-  /api/commands/production.harvest_change:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.harvest_change",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID харвеста, новые дата/количество
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/harvest.ChangeHarvestCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Изменить ранее зарегистрированный сбор урожая
-      tags:
-      - production
-  /api/commands/production.harvest_register:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.harvest_register",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID цикла, дата, количество
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/harvest.RegisterHarvestCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "404":
-          description: цикл не найден в вашей организации
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Зарегистрировать сбор урожая
-      tags:
-      - production
-  /api/commands/production.planting_change:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.planting_change",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID посева, новые дата/количество
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/planting.ChangePlantingCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Изменить ранее зарегистрированный посев
-      tags:
-      - production
-  /api/commands/production.planting_register:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.planting_register",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID цикла, дата, количество
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/planting.RegisterPlantingCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "404":
-          description: цикл не найден в вашей организации
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Зарегистрировать акт посева/посадки
-      tags:
-      - production
-  /api/commands/production.release_allocation:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.release_allocation",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID размещения, дата освобождения (опционально — по умолчанию
-          сейчас)
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/allocation.ReleaseAllocationCommand'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "409":
-          description: уже освобождено
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Завершить размещение (освободить физический узел)
-      tags:
-      - production
-  /api/commands/production.start_cycle:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "production.start_cycle",
-        "data": <тело ниже>}. allocations — обязателен и непуст: без единого размещения
-        это просто production.create_cycle. Статус цикла всегда становится Active,
-        клиент его не выбирает.'
-      parameters:
-      - description: Культура, сорт, метод, обязательные allocations, опциональные
-          plantings
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/growingcycle.StartGrowingCycleCMD'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Создать цикл выращивания И сразу разместить его на физических узлах
-        (+опционально посевы)
-      tags:
-      - production
   /api/commands/spatial.archive_production_unit:
     post:
       consumes:
       - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "spatial.archive_production_unit",
-        "data": <тело ниже>}'
       parameters:
       - description: ID узла
         in: body
@@ -1707,11 +330,20 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "409":
-          description: есть неархивные дети
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.IdResponse'
+              type: object
+        "404":
+          description: Узел не найден
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
+            $ref: '#/definitions/response.ErrResponse'
+        "409":
+          description: Есть неархивные дети
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
       security:
       - BearerAuth: []
       summary: Архивировать узел
@@ -1721,8 +353,6 @@ paths:
     post:
       consumes:
       - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "spatial.configure_production_unit",
-        "data": <тело ниже>}'
       parameters:
       - description: ID родителя и схема раскладки
         in: body
@@ -1736,18 +366,25 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.IdResponse'
+              type: object
+        "400":
+          description: VALIDATION_ERROR
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
       security:
       - BearerAuth: []
-      summary: Сгенерировать дочерние узлы по схеме (например, грядки в теплице)
+      summary: Сгенерировать схему узла
       tags:
       - spatial
   /api/commands/spatial.create_production_unit:
     post:
       consumes:
       - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "spatial.create_production_unit",
-        "data": <тело ниже>}'
       parameters:
       - description: Параметры узла
         in: body
@@ -1761,22 +398,25 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.IdResponse'
+              type: object
         "400":
-          description: Bad Request
+          description: VALIDATION_ERROR
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
+            $ref: '#/definitions/response.ErrResponse'
       security:
       - BearerAuth: []
-      summary: Создать узел (поле, участок, грядку, теплицу и т.д.)
+      summary: Создать узел
       tags:
       - spatial
   /api/commands/spatial.update_production_unit:
     post:
       consumes:
       - application/json
-      description: 'Реальный вызов: POST /api/commands, {"command": "spatial.update_production_unit",
-        "data": <тело ниже>}'
       parameters:
       - description: ID узла и схема
         in: body
@@ -1790,472 +430,21 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.IdResponse'
+              type: object
       security:
       - BearerAuth: []
-      summary: Обновить JSON-схему узла
+      summary: Обновить схему узла
       tags:
-      - spatial
-  /api/queries/account.me:
-    post:
-      consumes:
-      - application/json
-      description: 'Можно вызвать напрямую этим путём (тело = data), либо через POST
-        /api/queries с конвертом {"query": "account.me", "data": {...}}'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Текущий пользователь + список организаций, в которых он состоит
-      tags:
-      - account
-  /api/queries/agronomy.get_crop:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "agronomy.get_crop",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID культуры
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/getcrop.Query'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Получить культуру по ID
-      tags:
-      - agronomy
-  /api/queries/agronomy.get_variety:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "agronomy.get_variety",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID сорта
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/getvariety.Query'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Получить сорт по ID
-      tags:
-      - agronomy
-  /api/queries/agronomy.list_crops:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "agronomy.list_crops",
-        "data": <тело ниже>}'
-      parameters:
-      - description: Фильтр по категориям/поиску (опционально)
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/listcrops.Query'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список культур (с фильтром по категории)
-      tags:
-      - agronomy
-  /api/queries/agronomy.list_seasons:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "agronomy.list_seasons",
-        "data": {}}'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список сезонов организации
-      tags:
-      - agronomy
-  /api/queries/agronomy.list_varieties:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "agronomy.list_varieties",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID культуры
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/listvarieties.Query'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список сортов культуры
-      tags:
-      - agronomy
-  /api/queries/inventory.get_item:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "inventory.get_item",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID позиции
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/item.GetOneQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Получить позицию склада по ID
-      tags:
-      - inventory
-  /api/queries/inventory.list_items:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "inventory.list_items",
-        "data": <тело ниже>}'
-      parameters:
-      - description: warehouseId — опционально
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/item.ListQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список позиций склада (опционально — по конкретному складу)
-      tags:
-      - inventory
-  /api/queries/inventory.list_movements:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "inventory.list_movements",
-        "data": <тело ниже>}'
-      parameters:
-      - description: itemId — опционально
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/movement.ListQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: История движений (опционально — по конкретной позиции)
-      tags:
-      - inventory
-  /api/queries/inventory.list_warehouses:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "inventory.list_warehouses",
-        "data": {}}'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список складов организации
-      tags:
-      - inventory
-  /api/queries/operations.get_task:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "operations.get_task",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID задачи
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/task.GetOneQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Получить задачу по ID
-      tags:
-      - operations
-  /api/queries/operations.get_timeline:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "operations.get_timeline",
-        "data": <тело ниже>}'
-      parameters:
-      - description: growingCycleId — опционально, иначе общий таймлайн фермы
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/timeline.GetQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Таймлайн операций/задач (по циклу или общий по ферме)
-      tags:
-      - operations
-  /api/queries/operations.list_operations:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "operations.list_operations",
-        "data": <тело ниже>}'
-      parameters:
-      - description: growingCycleId — опционально
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/operationevent.ListQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список зафиксированных агрономических операций
-      tags:
-      - operations
-  /api/queries/operations.list_tasks:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "operations.list_tasks",
-        "data": <тело ниже>}'
-      parameters:
-      - description: growingCycleId — опционально
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/task.ListQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список задач фермы (опционально — по циклу выращивания)
-      tags:
-      - operations
-  /api/queries/production.get_allocation:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "production.get_allocation",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID размещения
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/allocation.GetOneQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Получить размещение по ID (с кодом физического узла)
-      tags:
-      - production
-  /api/queries/production.get_growing_cycle:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "production.get_growing_cycle",
-        "data": <тело ниже>}. Сейчас идентично production.summary_growing_cycles.'
-      parameters:
-      - description: ID цикла
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/growingcycle.GetOneQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: 'Получить один цикл выращивания (сводка: площадь, посажено, собрано)'
-      tags:
-      - production
-  /api/queries/production.helpers:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "production.helpers",
-        "data": {}}'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Справочник допустимых статусов/стадий/методов цикла выращивания (для
-        выпадающих списков UI)
-      tags:
-      - production
-  /api/queries/production.list_allocations:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "production.list_allocations",
-        "data": {}}'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список всех размещений организации
-      tags:
-      - production
-  /api/queries/production.list_growing_cycles:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "production.list_growing_cycles",
-        "data": {}}'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Список циклов выращивания, сгруппированных по культуре, с аллокациями
-        и прогрессом
-      tags:
-      - production
-  /api/queries/production.summary_growing_cycles:
-    post:
-      consumes:
-      - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "production.summary_growing_cycles",
-        "data": <тело ниже>}'
-      parameters:
-      - description: ID цикла
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/growingcycle.SummaryQuery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: 'Сводка по одному циклу: занятая площадь, посажено, собрано'
-      tags:
-      - production
+      - spatial[schema]
   /api/queries/spatial.get_production_unit:
     post:
       consumes:
       - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "spatial.get_production_unit",
-        "data": <тело ниже>}'
       parameters:
       - description: ID узла
         in: body
@@ -2269,77 +458,63 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/productionunit.DTO'
+              type: object
       security:
       - BearerAuth: []
       summary: Получить узел вместе с поддеревом
+      tags:
+      - spatial
+  /api/queries/spatial.get_production_unit_children:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/productionunit.DTO'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Список детских узлов
       tags:
       - spatial
   /api/queries/spatial.list_production_units:
     post:
       consumes:
       - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "spatial.list_production_units",
-        "data": {}}'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/response.CommandResponse-array_productionunit_DTO'
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/productionunit.DTO'
+                  type: array
+              type: object
       security:
       - BearerAuth: []
       summary: Список корневых узлов организации (с вложенными деревьями)
       tags:
       - spatial
-  /auth/login:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Email и пароль
-        in: body
-        name: request
-        required: true
-        schema:
-          $ref: '#/definitions/auth.LoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      summary: Вход, выдаёт access/refresh токены
-      tags:
-      - auth
-  /auth/logout:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Refresh-токен
-        in: body
-        name: request
-        schema:
-          $ref: '#/definitions/auth.LogoutRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.CommandResponse-any'
-      security:
-      - BearerAuth: []
-      summary: Выход (текущая реализация — заглушка, blacklist токенов не ведётся)
-      tags:
-      - auth
   /auth/register:
     post:
       consumes:
@@ -2357,11 +532,16 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/auth.RegisterResponse'
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.RegisterResponse'
+              type: object
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/response.CommandResponse-any'
+            $ref: '#/definitions/response.ErrResponse'
       summary: Регистрация нового пользователя
       tags:
       - auth

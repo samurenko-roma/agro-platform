@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -29,7 +30,33 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	// ========== AUTH ЭНДПОИНТЫ (без CQRS) ==========
 	authHandler := auth.NewAuthHandler(cfg.Uow, cfg.JWTService)
 
-	mux.HandleFunc("POST /auth/register", authHandler.Register)
+	mux.HandleFunc("POST /auth/register", func(w http.ResponseWriter, r *http.Request) {
+		var req *auth.RegisterRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			response.WriteValidationError(w, "invalid request body")
+			return
+		}
+
+		// Валидация
+		if req.Email == "" {
+			response.WriteValidationError(w, "email is required")
+			return
+		}
+		if req.Username == "" {
+			response.WriteValidationError(w, "username is required")
+			return
+		}
+		if req.Password == "" || len(req.Password) < 6 {
+			response.WriteValidationError(w, "password must be at least 6 characters")
+			return
+		}
+
+		res, err := authHandler.Register(r.Context(), req)
+		if err != nil {
+			response.WriteValidationError(w, err.Error())
+		}
+		response.Success(res).WriteJSON(w, http.StatusOK)
+	})
 	mux.HandleFunc("POST /auth/login", authHandler.Login)
 	//mux.HandleFunc("GET /auth/me", authHandler.Me)
 
@@ -46,8 +73,8 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	// Команды и запросы идут через единый endpoint с аутентификацией
 
 	protectedMux := http.NewServeMux()
-	protectedMux.Handle("/commands/", CommandEndpoint(cfg.CommandRouter))
-	protectedMux.Handle("/queries/", QueryEndpoint(cfg.QueryRouter))
+	//protectedMux.Handle("/commands/", CommandEndpoint(cfg.CommandRouter))
+	//protectedMux.Handle("/queries/", QueryEndpoint(cfg.QueryRouter))
 	protectedMux.Handle("POST /commands/{name}", CommandByNameEndpoint(cfg.CommandRouter))
 	protectedMux.Handle("POST /queries/{name}", QueryByNameEndpoint(cfg.QueryRouter))
 

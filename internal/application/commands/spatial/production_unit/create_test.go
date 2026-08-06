@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	productionunitCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/spatial/production_unit"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 	pu "github.com/samurenkoroma/agro-platform/internal/domain/spatial/aggregate/production_unit"
 	spatialrepo "github.com/samurenkoroma/agro-platform/internal/domain/spatial/repository"
 	inmemspatial "github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/inmemory/spatial"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/testutil"
 )
 

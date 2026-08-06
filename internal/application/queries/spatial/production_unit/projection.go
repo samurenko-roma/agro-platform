@@ -25,6 +25,7 @@ type ClimateDTO struct {
 	LightPPFDMax   *float64 `json:"lightPpfdMax"`
 }
 
+// @name ProductUnitListItem
 type DTO struct {
 	ID         vo.ID          `json:"id"`
 	ParentID   *vo.ID         `json:"parentId"`

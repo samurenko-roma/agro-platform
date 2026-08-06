@@ -1,11 +1,12 @@
 package productionunit_test
 
 import (
+	"errors"
 	"testing"
 
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	productionunitCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/spatial/production_unit"
 	pu "github.com/samurenkoroma/agro-platform/internal/domain/spatial/aggregate/production_unit"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/testutil"
 )
 
@@ -31,7 +32,7 @@ func TestArchive_UnitWithActiveChildren_Fails(t *testing.T) {
 	h.Create(ctx, &productionunitCmd.CreateCommand{Type: pu.Block, Name: "Блок", ParentID: &fieldID})
 
 	_, err := h.Archive(ctx, &productionunitCmd.ArchiveCommand{Id: fieldID})
-	if err != productionunitCmd.ErrHasActiveChildren {
+	if !errors.Is(err, productionunitCmd.ErrHasActiveChildren) {
 		t.Fatalf("expected ErrHasActiveChildren, got %v", err)
 	}
 }
@@ -45,7 +46,7 @@ func TestArchive_AlreadyArchived_Fails(t *testing.T) {
 
 	h.Archive(ctx, &productionunitCmd.ArchiveCommand{Id: id})
 	_, err := h.Archive(ctx, &productionunitCmd.ArchiveCommand{Id: id})
-	if err != pu.ErrAlreadyArchived {
+	if !errors.Is(err, pu.ErrAlreadyArchived) {
 		t.Fatalf("expected ErrAlreadyArchived, got %v", err)
 	}
 }

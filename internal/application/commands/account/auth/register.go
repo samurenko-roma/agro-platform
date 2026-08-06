@@ -1,14 +1,13 @@
 package auth
 
 import (
-	"encoding/json"
-	"net/http"
+	"context"
 
+	command "github.com/samurenkoroma/agro-platform/internal/application/commands"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	account "github.com/samurenkoroma/agro-platform/internal/domain/account/aggregate/user"
 	domain "github.com/samurenkoroma/agro-platform/internal/domain/account/repository"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
-	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 
@@ -20,7 +19,6 @@ type RegisterRequest struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Phone     string `json:"phone"`
-	Role      string `json:"role"`
 }
 
 // RegisterResponse ответ на регистрацию
@@ -32,64 +30,51 @@ type RegisterResponse struct {
 	Message  string `json:"message"`
 }
 
-// POST /auth/register
-func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
-	var req RegisterRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.WriteValidationError(w, "invalid request body")
-		return
+// Register godoc
+// @Summary Регистрация нового пользователя
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body RegisterRequest true "Данные регистрации"
+// @Success 201 {object} response.SuccessResponse{data=RegisterResponse}
+// @Failure 400 {object} response.ErrResponse[any]
+// @Router /auth/register [post]
+func (h *AuthHandler) Register(ctx context.Context, payload any) (any, error) {
+	cmd, ok := payload.(*RegisterRequest)
+	if !ok {
+		return nil, command.ErrInvalidCommandType
 	}
 
-	// Валидация
-	if req.Email == "" {
-		response.WriteValidationError(w, "email is required")
-		return
-	}
-	if req.Username == "" {
-		response.WriteValidationError(w, "username is required")
-		return
-	}
-	if req.Password == "" || len(req.Password) < 6 {
-		response.WriteValidationError(w, "password must be at least 6 characters")
-		return
-	}
-
-	ctx := r.Context()
-	h.uow.Execute(ctx, providers.NewAccountProvider, func(provider repository.RepositoryProvider, exec uow.Execution) (any, error) {
+	return h.uow.Execute(ctx, providers.NewAccountProvider, func(provider repository.RepositoryProvider, exec uow.Execution) (any, error) {
 		// Приводим провайдер к нужному типу
 		authProvider, ok := provider.(domain.AccountProvider)
 		if !ok {
 			if !ok {
 			}
-			response.WriteInternalError(w, repository.ErrInvalidProviderType.Error())
+			if !ok {
+				return nil, repository.ErrInvalidProviderType
+			}
 			return nil, repository.ErrInvalidProviderType
 		}
 		userRepo := authProvider.Users()
 
 		// Проверяем, не существует ли пользователь
-		existing, _ := userRepo.FindByEmail(ctx, req.Email)
+		existing, _ := userRepo.FindByEmail(ctx, cmd.Email)
 		if existing != nil {
 			return nil, account.ErrUserAlreadyExists
 		}
 
-		existing, _ = userRepo.FindByUsername(ctx, req.Username)
+		existing, _ = userRepo.FindByUsername(ctx, cmd.Username)
 		if existing != nil {
 			return nil, account.ErrUserAlreadyExists
-		}
-
-		// Определяем роль
-		role := account.Role(req.Role)
-		if role == "" {
-			role = account.RoleClient // роль по умолчанию
 		}
 
 		// Создаем пользователя
 		user, err := account.NewUser(
-			req.Email, req.Username, req.Password,
-			req.FirstName, req.LastName, req.Phone,
+			cmd.Email, cmd.Username, cmd.Password,
+			cmd.FirstName, cmd.LastName, cmd.Phone,
 		)
 		if err != nil {
-			response.WriteValidationError(w, err.Error())
 			return nil, err
 		}
 
@@ -99,15 +84,13 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		}
 
 		exec.RegisterAggregate(user)
-		response.Success(RegisterResponse{
+		return RegisterResponse{
 			UserID:   user.ID,
 			Email:    user.Email,
 			Username: user.Username,
 			Role:     string(user.Role),
 			Message:  "User registered successfully",
-		}).WriteJSON(w, http.StatusCreated)
-		return nil, nil
+		}, nil
 	})
-	return
 
 }

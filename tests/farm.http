@@ -1,31 +1,30 @@
-POST http://localhost:8080/api/commands/
+POST http://{{host}}/api/commands/spatial.create_production_unit
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
-
 {
-  "command": "spatial.create_production_unit",
-  "data": {
-    "name": "shalasawdadawdawdh",
-    "farmId": "awdawdawdaw",
-    "type": "FIELD"
+  "name": "shalasawdadawdawdh",
+  "type": "FIELD",
+  "area": {
+    "unit": "HECTARE",
+    "value": 3
   }
 }
 
 ###
 
-POST http://{{host}}/api/commands/
+POST http://{{host}}/api/commands/spatial.configure_production_unit
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-  "command": "spatial.configure_production_unit",
-  "data": {
-    "id": "58a6c781-a659-4576-bc20-12b361f9f145",
-    "schema": [
+  "id": "74e35fb1-9ad1-4acd-978e-db49fe47e741",
+  "schema": {
+    "beds": [
       {
+
         "id": "7d7f6ee8-6534-4b94-95d3-4db06a274e37",
-        "type": "bed",
+        "type": "BLOCK",
         "x": 0.6,
         "y": 0.2,
         "width": 3,
@@ -35,7 +34,7 @@ Authorization: Bearer {{token}}
       },
       {
         "id": "5a5d8d3d-7fcf-482e-9f86-34ca74f141cb",
-        "type": "bed",
+        "type": "BLOCK",
         "x": 1.8,
         "y": 1.9,
         "width": 3,

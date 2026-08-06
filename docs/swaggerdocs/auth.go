@@ -1,16 +1,5 @@
 package swaggerdocs
 
-import (
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/account/auth"
-	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
-)
-
-var (
-	_ = auth.RegisterRequest{}
-
-	_ = response.CommandResponse[any]{}
-)
-
 // Эти три — единственные РЕАЛЬНЫЕ пути в этой спеке (не /api/commands или
 // /api/queries под капотом). Regex-перехватчик в docs/swagger/index.html
 // их не трогает (не матчит /api/commands/ или /api/queries/), поэтому

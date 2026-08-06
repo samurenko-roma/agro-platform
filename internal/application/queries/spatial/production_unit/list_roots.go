@@ -22,6 +22,13 @@ type ListRootsQuery struct {
 	Id string `json:"id,omitempty"`
 }
 
+// @Summary Список корневых узлов организации (с вложенными деревьями)
+// @Tags spatial
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.SuccessResponse{data=[]productionunit.DTO}
+// @Router /api/queries/spatial.list_production_units [post]
 func (h *listRootsHandler) Ask(ctx context.Context, payload any) (any, error) {
 	_, ok := payload.(*ListRootsQuery)
 	if !ok {

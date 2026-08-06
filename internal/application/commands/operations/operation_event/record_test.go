@@ -5,10 +5,10 @@ import (
 	"testing"
 
 	operationevent "github.com/samurenkoroma/agro-platform/internal/application/commands/operations/operation_event"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/response"
 	opsrepo "github.com/samurenkoroma/agro-platform/internal/domain/operations/repository"
 	vo "github.com/samurenkoroma/agro-platform/internal/domain/shared/valueobject"
 	inmemops "github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/inmemory/operations"
+	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/testutil"
 )
 

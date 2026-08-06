@@ -1,18 +1,5 @@
 package swaggerdocs
 
-import (
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/account/organization"
-	"github.com/samurenkoroma/agro-platform/internal/application/queries/account/dto"
-	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
-)
-
-var (
-	_ = organization.CreateOrganizationCmd{}
-	_ = dto.UserOrganizationInfo{}
-	_ = organization.SwitchOrganizationResult{}
-	_ = response.CommandResponse[any]{}
-)
-
 // docCreateOrganization godoc
 // @Summary Создать организацию (ферму/хозяйство), пользователь становится владельцем
 // @Description Можно вызвать напрямую этим путём (тело = data), либо через POST /api/commands с конвертом {"command": "account.create_organization", "data": {...}}
