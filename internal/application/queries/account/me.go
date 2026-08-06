@@ -23,6 +23,15 @@ type MeResponse struct {
 	CurrentOrgId string                      `json:"currentOrgId"`
 }
 
+// Ask
+// @Summary Текущий пользователь
+// @Description Текущий пользователь + список организаций, в которых он состоит
+// @Tags account
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} response.SuccessResponse{data=MeResponse}
+// @Router /api/queries/account.me [post]
 func (h *UserHandler) Ask(ctx context.Context, cmd any) (any, error) {
 	userID, ok := ctx.Value("user_id").(string)
 	if !ok {

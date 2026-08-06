@@ -24,6 +24,18 @@ type SwitchOrganizationResult struct {
 	CurrentOrg dto.UserOrganizationInfo `json:"currentOrg"`
 }
 
+// Switch
+// @Summary Переключиться на другую организацию
+// @Description Переключиться на другую организацию (перевыпускает JWT с новым organization_id)
+// @Tags account
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body SwitchOrganizationCmd true "ID организации, в которой есть членство"
+// @Success 200 {object} response.SuccessResponse{data=SwitchOrganizationResult}
+// @Failure 403 {object} response.ErrResponse "нет членства в организации"
+// @Router /api/commands/account.switch_organization [post]
+func docSwitchOrganization() {}
 func (h *OrganizationHandler) Switch(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*SwitchOrganizationCmd)
 	if !ok {

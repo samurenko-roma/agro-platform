@@ -1,4 +1,15 @@
 definitions:
+  account.MeResponse:
+    properties:
+      currentOrgId:
+        type: string
+      organizations:
+        items:
+          $ref: '#/definitions/dto.UserOrganizationInfo'
+        type: array
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
   auth.LoginRequest:
     properties:
       email:
@@ -70,6 +81,17 @@ definitions:
       role:
         type: string
     type: object
+  dto.UserOrganizationInfo:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+      roleName:
+        type: string
+    type: object
   jwt.TokenPair:
     properties:
       accessToken:
@@ -78,6 +100,23 @@ definitions:
         type: integer
       refreshToken:
         type: string
+    type: object
+  organization.CreateOrganizationCmd:
+    properties:
+      name:
+        type: string
+    type: object
+  organization.SwitchOrganizationCmd:
+    properties:
+      organization_id:
+        type: string
+    type: object
+  organization.SwitchOrganizationResult:
+    properties:
+      currentOrg:
+        $ref: '#/definitions/dto.UserOrganizationInfo'
+      tokenPair:
+        $ref: '#/definitions/jwt.TokenPair'
     type: object
   productionunit.ArchiveCommand:
     properties:
@@ -363,6 +402,74 @@ info:
   title: Agro Platform API
   version: "1.0"
 paths:
+  /api/commands/account.create_organization:
+    post:
+      consumes:
+      - application/json
+      description: Создать организацию (ферму/хозяйство), пользователь становится
+        владельцем
+      parameters:
+      - description: Название организации
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/organization.CreateOrganizationCmd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/dto.UserOrganizationInfo'
+              type: object
+        "400":
+          description: VALIDATION_ERROR
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать организацию
+      tags:
+      - account
+  /api/commands/account.switch_organization:
+    post:
+      consumes:
+      - application/json
+      description: Переключиться на другую организацию (перевыпускает JWT с новым
+        organization_id)
+      parameters:
+      - description: ID организации, в которой есть членство
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/organization.SwitchOrganizationCmd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/organization.SwitchOrganizationResult'
+              type: object
+        "403":
+          description: нет членства в организации
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Переключиться на другую организацию
+      tags:
+      - account
   /api/commands/spatial.archive_production_unit:
     post:
       consumes:
@@ -491,6 +598,28 @@ paths:
       summary: Обновить схему узла
       tags:
       - spatial
+  /api/queries/account.me:
+    post:
+      consumes:
+      - application/json
+      description: Текущий пользователь + список организаций, в которых он состоит
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/account.MeResponse'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Текущий пользователь
+      tags:
+      - account
   /api/queries/spatial.get_production_unit:
     post:
       consumes:

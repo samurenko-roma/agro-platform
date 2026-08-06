@@ -8,6 +8,120 @@
     },
     "host": "localhost:8080",
     "paths": {
+        "/api/commands/account.create_organization": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создать организацию (ферму/хозяйство), пользователь становится владельцем",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Создать организацию",
+                "parameters": [
+                    {
+                        "description": "Название организации",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/organization.CreateOrganizationCmd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/dto.UserOrganizationInfo"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "VALIDATION_ERROR",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/commands/account.switch_organization": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Переключиться на другую организацию (перевыпускает JWT с новым organization_id)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Переключиться на другую организацию",
+                "parameters": [
+                    {
+                        "description": "ID организации, в которой есть членство",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/organization.SwitchOrganizationCmd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/organization.SwitchOrganizationResult"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "403": {
+                        "description": "нет членства в организации",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/commands/spatial.archive_production_unit": {
             "post": {
                 "security": [
@@ -223,6 +337,46 @@
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/queries/account.me": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Текущий пользователь + список организаций, в которых он состоит",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "account"
+                ],
+                "summary": "Текущий пользователь",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/account.MeResponse"
                                         }
                                     }
                                 }
@@ -504,6 +658,23 @@
         }
     },
     "definitions": {
+        "account.MeResponse": {
+            "type": "object",
+            "properties": {
+                "currentOrgId": {
+                    "type": "string"
+                },
+                "organizations": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/dto.UserOrganizationInfo"
+                    }
+                },
+                "user": {
+                    "$ref": "#/definitions/auth.User"
+                }
+            }
+        },
         "auth.LoginRequest": {
             "type": "object",
             "required": [
@@ -610,6 +781,23 @@
                 }
             }
         },
+        "dto.UserOrganizationInfo": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                },
+                "roleName": {
+                    "type": "string"
+                }
+            }
+        },
         "jwt.TokenPair": {
             "type": "object",
             "properties": {
@@ -621,6 +809,33 @@
                 },
                 "refreshToken": {
                     "type": "string"
+                }
+            }
+        },
+        "organization.CreateOrganizationCmd": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "organization.SwitchOrganizationCmd": {
+            "type": "object",
+            "properties": {
+                "organization_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "organization.SwitchOrganizationResult": {
+            "type": "object",
+            "properties": {
+                "currentOrg": {
+                    "$ref": "#/definitions/dto.UserOrganizationInfo"
+                },
+                "tokenPair": {
+                    "$ref": "#/definitions/jwt.TokenPair"
                 }
             }
         },

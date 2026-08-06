@@ -18,6 +18,17 @@ type CreateOrganizationCmd struct {
 	Name string `json:"name"`
 }
 
+// Create
+// @Summary Создать организацию
+// @Description Создать организацию (ферму/хозяйство), пользователь становится владельцем
+// @Tags account
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body CreateOrganizationCmd true "Название организации"
+// @Success 200 {object} response.SuccessResponse{data=dto.UserOrganizationInfo}
+// @Failure 400 {object} response.ErrResponse "VALIDATION_ERROR"
+// @Router /api/commands/account.create_organization [post]
 func (h *OrganizationHandler) Create(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*CreateOrganizationCmd)
 	if !ok {
