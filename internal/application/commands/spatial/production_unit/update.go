@@ -15,7 +15,7 @@ import (
 
 // Update production unit
 // @Summary Обновить схему узла
-// @Tags spatial[schema]
+// @Tags spatial
 // @Accept json
 // @Produce json
 // @Security BearerAuth

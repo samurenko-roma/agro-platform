@@ -13,9 +13,9 @@ import (
 
 // RegisterRequest запрос на регистрацию
 type RegisterRequest struct {
-	Email     string `json:"email"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
+	Email     string `json:"email" validate:"required,email"`
+	Username  string `json:"username" validate:"required,min=3,max=32"`
+	Password  string `json:"password" validate:"required,min=8,max=32"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Phone     string `json:"phone"`
@@ -31,13 +31,13 @@ type RegisterResponse struct {
 }
 
 // Register godoc
-// @Summary Регистрация нового пользователя
+// @Summary Регистрация
 // @Tags auth
 // @Accept json
 // @Produce json
 // @Param request body RegisterRequest true "Данные регистрации"
 // @Success 201 {object} response.SuccessResponse{data=RegisterResponse}
-// @Failure 400 {object} response.ErrResponse[any]
+// @Failure 400 {object} response.ErrResponse
 // @Router /auth/register [post]
 func (h *AuthHandler) Register(ctx context.Context, payload any) (any, error) {
 	cmd, ok := payload.(*RegisterRequest)

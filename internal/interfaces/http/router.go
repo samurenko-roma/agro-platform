@@ -1,8 +1,8 @@
 package http
 
 import (
-	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 
@@ -12,6 +12,7 @@ import (
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/jwt"
 	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
+	"github.com/samurenkoroma/agro-platform/pkg/utils"
 )
 
 // RouterConfig конфигурация роутера
@@ -31,43 +32,47 @@ func NewRouter(cfg RouterConfig) http.Handler {
 	authHandler := auth.NewAuthHandler(cfg.Uow, cfg.JWTService)
 
 	mux.HandleFunc("POST /auth/register", func(w http.ResponseWriter, r *http.Request) {
-		var req *auth.RegisterRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
 			response.WriteValidationError(w, "invalid request body")
 			return
 		}
-
-		// Валидация
-		if req.Email == "" {
-			response.WriteValidationError(w, "email is required")
-			return
-		}
-		if req.Username == "" {
-			response.WriteValidationError(w, "username is required")
-			return
-		}
-		if req.Password == "" || len(req.Password) < 6 {
-			response.WriteValidationError(w, "password must be at least 6 characters")
+		data, err := utils.DecodeJSON[auth.RegisterRequest](body)
+		if err != nil {
+			response.WriteValidationError(w, err.Error())
 			return
 		}
 
-		res, err := authHandler.Register(r.Context(), req)
+		res, err := authHandler.Register(r.Context(), data)
 		if err != nil {
 			response.WriteValidationError(w, err.Error())
 		}
 		response.Success(res).WriteJSON(w, http.StatusOK)
 	})
-	mux.HandleFunc("POST /auth/login", authHandler.Login)
-	//mux.HandleFunc("GET /auth/me", authHandler.Me)
+	mux.HandleFunc("POST /auth/login", func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			response.WriteValidationError(w, "invalid request body")
+			return
+		}
+		data, err := utils.DecodeJSON[auth.LoginRequest](body)
+		if err != nil {
+			response.WriteValidationError(w, err.Error())
+			return
+		}
+
+		res, err := authHandler.Login(r.Context(), data)
+		if err != nil {
+			response.WriteValidationError(w, err.Error())
+		}
+		response.Success(res).WriteJSON(w, http.StatusOK)
+	})
 
 	authMiddleware := NewAuthMiddleware(cfg.JWTService)
 	// Защищенные эндпоинты (требуют аутентификации)
 	mux.Handle("POST /auth/logout", authMiddleware.Authenticate(
 		http.HandlerFunc(authHandler.Logout),
 	))
-	//mux.Handle("GET /auth/me", authMiddleware.Authenticate(
-	//	http.HandlerFunc(authHandler.Me),
-	//))
 
 	// ========== CQRS ЭНДПОИНТЫ ==========
 	// Команды и запросы идут через единый endpoint с аутентификацией

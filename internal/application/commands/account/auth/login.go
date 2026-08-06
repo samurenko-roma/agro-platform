@@ -1,21 +1,20 @@
 package auth
 
 import (
-	"encoding/json"
-	"net/http"
+	"context"
 
+	command "github.com/samurenkoroma/agro-platform/internal/application/commands"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
 	account "github.com/samurenkoroma/agro-platform/internal/domain/account/aggregate/user"
 	domain "github.com/samurenkoroma/agro-platform/internal/domain/account/repository"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/jwt"
 	"github.com/samurenkoroma/agro-platform/internal/infrastructure/repository/providers"
-	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
 	"github.com/samurenkoroma/agro-platform/internal/shared/repository"
 )
 
 type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" validate:"required"`
+	Password string `json:"password" validate:"required"`
 }
 type User struct {
 	Id    string `json:"id"`
@@ -29,30 +28,27 @@ type LoginResult struct {
 	CurrentOrgId string         `json:"currentOrgId,omitempty"`
 }
 
-func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
-	var req LoginRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		response.WriteValidationError(w, "invalid request body")
-		return
+// Login
+// @Summary Вход
+// @Tags auth
+// @Accept json
+// @Produce json
+// @Param request body LoginRequest true "Email и пароль"
+// @Success 200 {object} response.SuccessResponse{data=LoginResult}
+// @Failure 400 {object} response.ErrResponse
+// @Router /auth/login [post]
+func docLogin() {}
+func (h *AuthHandler) Login(ctx context.Context, payload any) (any, error) {
+	cmd, ok := payload.(*LoginRequest)
+	if !ok {
+		return nil, command.ErrInvalidCommandType
 	}
-
-	if req.Email == "" {
-		response.WriteValidationError(w, "email is required")
-		return
-	}
-	if req.Password == "" || len(req.Password) < 6 {
-		response.WriteValidationError(w, "password must be at least 6 characters")
-		return
-	}
-
-	ctx := r.Context()
-	h.uow.Execute(ctx, providers.NewAccountProvider, func(provider repository.RepositoryProvider, exec uow.Execution) (any, error) {
+	return h.uow.Execute(ctx, providers.NewAccountProvider, func(provider repository.RepositoryProvider, exec uow.Execution) (any, error) {
 		// Приводим провайдер к нужному типу
 		authProvider, ok := provider.(domain.AccountProvider)
 		if !ok {
 			if !ok {
 			}
-			response.WriteInternalError(w, repository.ErrInvalidProviderType.Error())
 			return nil, repository.ErrInvalidProviderType
 		}
 
@@ -60,15 +56,13 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		membershipRepo := authProvider.Memberships()
 
 		// Ищем пользователя
-		user, err := userRepo.FindByEmail(ctx, req.Email)
+		user, err := userRepo.FindByEmail(ctx, cmd.Email)
 		if err != nil {
-			response.WriteNotFound(w, err.Error())
 			return nil, account.ErrInvalidCredentials
 		}
 
 		// Проверяем пароль
-		if !user.CheckPassword(req.Password) {
-			response.WriteValidationError(w, account.ErrInvalidCredentials.Error())
+		if !user.CheckPassword(cmd.Password) {
 			return nil, account.ErrInvalidCredentials
 		}
 
@@ -107,19 +101,16 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		userRepo.Update(ctx, user)
 
 		exec.RegisterAggregate(user)
-		response.Success(
-			LoginResult{
-				TokenPair: tokenPair,
-				User: User{
-					Id:    user.ID,
-					Name:  user.Username,
-					Email: user.Email,
-					Role:  user.Role.String(),
-				},
-				CurrentOrgId: currentOrgID,
-			}).WriteJSON(w, http.StatusOK)
+		return LoginResult{
+			TokenPair: tokenPair,
+			User: User{
+				Id:    user.ID,
+				Name:  user.Username,
+				Email: user.Email,
+				Role:  user.Role.String(),
+			},
+			CurrentOrgId: currentOrgID,
+		}, nil
 
-		return nil, nil
 	})
-	return
 }

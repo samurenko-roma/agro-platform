@@ -1,4 +1,28 @@
 definitions:
+  auth.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  auth.LoginResult:
+    properties:
+      currentOrgId:
+        type: string
+      tokenPair:
+        $ref: '#/definitions/jwt.TokenPair'
+      user:
+        $ref: '#/definitions/auth.User'
+    type: object
+  auth.LogoutRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
   auth.RegisterRequest:
     properties:
       email:
@@ -8,13 +32,19 @@ definitions:
       last_name:
         type: string
       password:
+        maxLength: 32
+        minLength: 8
         type: string
       phone:
         type: string
-      role:
-        type: string
       username:
+        maxLength: 32
+        minLength: 3
         type: string
+    required:
+    - email
+    - password
+    - username
     type: object
   auth.RegisterResponse:
     properties:
@@ -27,6 +57,26 @@ definitions:
       user_id:
         type: string
       username:
+        type: string
+    type: object
+  auth.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      role:
+        type: string
+    type: object
+  jwt.TokenPair:
+    properties:
+      accessToken:
+        type: string
+      expiresIn:
+        type: integer
+      refreshToken:
         type: string
     type: object
   productionunit.ArchiveCommand:
@@ -440,7 +490,7 @@ paths:
       - BearerAuth: []
       summary: Обновить схему узла
       tags:
-      - spatial[schema]
+      - spatial
   /api/queries/spatial.get_production_unit:
     post:
       consumes:
@@ -515,6 +565,56 @@ paths:
       summary: Список корневых узлов организации (с вложенными деревьями)
       tags:
       - spatial
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Email и пароль
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.LoginResult'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      summary: Вход
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Refresh-токен
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/auth.LogoutRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      security:
+      - BearerAuth: []
+      summary: Выход (текущая реализация — заглушка, blacklist токенов не ведётся)
+      tags:
+      - auth
   /auth/register:
     post:
       consumes:
@@ -542,7 +642,7 @@ paths:
           description: Bad Request
           schema:
             $ref: '#/definitions/response.ErrResponse'
-      summary: Регистрация нового пользователя
+      summary: Регистрация
       tags:
       - auth
 securityDefinitions:
