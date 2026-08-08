@@ -122,6 +122,183 @@
                 }
             }
         },
+        "/api/commands/agronomy.create_crop": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создать культуру в справочнике (Crop) — биология вида: температуры, GDD, водопотребление",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Создать культуру",
+                "parameters": [
+                    {
+                        "description": "Название, категория, семейство, агрономический профиль",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/crop.CreateCropCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "VALIDATION_ERROR",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/commands/agronomy.create_season": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создать агрономический сезон (период планирования)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Создать агрономический сезон (период планирования)",
+                "parameters": [
+                    {
+                        "description": "Название, даты начала/конца, статус",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/season.CreateSeasonCmd"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "409": {
+                        "description": "VALIDATION_ERROR",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/commands/agronomy.create_variety": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Создать сорт культуры (Variety) — конкретный коммерческий сорт с зрелостью/спейсингом",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Создать сорт культуры",
+                "parameters": [
+                    {
+                        "description": "Название, ID культуры, дни до созревания",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/variety.CreateVarietyCommand"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/response.IdResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
+                        }
+                    },
+                    "409": {
+                        "description": "сорт с таким именем уже существует у этой культуры",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/commands/spatial.archive_production_unit": {
             "post": {
                 "security": [
@@ -377,6 +554,213 @@
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/account.MeResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/queries/agronomy.get_crop": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Реальный вызов: POST /api/queries, {\"query\": \"agronomy.get_crop\", \"data\": \u003cтело ниже\u003e}",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Получить культуру по ID",
+                "parameters": [
+                    {
+                        "description": "ID культуры",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/crop.OneQuery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/crop.Detail"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/queries/agronomy.get_variety": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Получить сорт по ID",
+                "parameters": [
+                    {
+                        "description": "ID сорта",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/variety.OneQuery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/variety.Detail"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/queries/agronomy.list_crops": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Список культур (с фильтром по категории)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Список культур",
+                "parameters": [
+                    {
+                        "description": "Фильтр по категориям/поиску (опционально)",
+                        "name": "request",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/crop.ListQuery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/crop.ListItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/queries/agronomy.list_varieties": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Список сортов культуры",
+                "parameters": [
+                    {
+                        "description": "ID культуры",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/variety.ListQuery"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/variety.ListItem"
+                                            }
                                         }
                                     }
                                 }
@@ -781,6 +1165,221 @@
                 }
             }
         },
+        "crop.AgronomyProfile": {
+            "type": "object",
+            "properties": {
+                "lightRequirement": {
+                    "$ref": "#/definitions/crop.LightRequirement"
+                },
+                "maturity": {
+                    "$ref": "#/definitions/valueobject.Maturity"
+                },
+                "phenophaseGDD": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/crop.PhenophaseGDD"
+                    }
+                },
+                "thermalRequirements": {
+                    "$ref": "#/definitions/crop.ThermalRequirements"
+                },
+                "tolerance": {
+                    "$ref": "#/definitions/crop.Tolerance"
+                },
+                "waterRequirement": {
+                    "$ref": "#/definitions/crop.WaterRequirement"
+                }
+            }
+        },
+        "crop.CreateCropCommand": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "agronomy": {
+                    "$ref": "#/definitions/crop.AgronomyProfile"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "family": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "crop.Detail": {
+            "type": "object",
+            "properties": {
+                "agronomy": {
+                    "type": "string"
+                },
+                "category": {
+                    "type": "string"
+                },
+                "family": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "$ref": "#/definitions/valueobject.Metadata"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "crop.LightRequirement": {
+            "type": "object",
+            "properties": {
+                "dayLengthMin": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "dayLengthOpt": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "photoperiodType": {
+                    "type": "string"
+                },
+                "ppfdmin": {
+                    "type": "integer"
+                },
+                "ppfdopt": {
+                    "type": "integer"
+                }
+            }
+        },
+        "crop.ListItem": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string"
+                },
+                "family": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "imageUrl": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "crop.ListQuery": {
+            "type": "object",
+            "properties": {
+                "archived": {
+                    "type": "boolean"
+                },
+                "categories": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "search": {
+                    "type": "string"
+                }
+            }
+        },
+        "crop.OneQuery": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "crop.PhenophaseGDD": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "description": "\"BBCH-10\"",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "описание фазы",
+                    "type": "string"
+                },
+                "gddrequired": {
+                    "description": "накопленное GDD для достижения",
+                    "type": "number",
+                    "format": "float64"
+                },
+                "isCritical": {
+                    "description": "критическая фаза?",
+                    "type": "boolean"
+                },
+                "name": {
+                    "description": "\"Первый настоящий лист\"",
+                    "type": "string"
+                }
+            }
+        },
+        "crop.ThermalRequirements": {
+            "type": "object",
+            "properties": {
+                "baseTemperature": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "upperTemperature": {
+                    "type": "number",
+                    "format": "float64"
+                }
+            }
+        },
+        "crop.Tolerance": {
+            "type": "object",
+            "properties": {
+                "humidityMax": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "humidityMin": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "temperatureMax": {
+                    "type": "integer",
+                    "format": "int32"
+                },
+                "temperatureMin": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            }
+        },
+        "crop.WaterRequirement": {
+            "type": "object",
+            "properties": {
+                "dailyNeedMin": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "dailyNeedOpt": {
+                    "type": "number",
+                    "format": "float64"
+                }
+            }
+        },
         "dto.UserOrganizationInfo": {
             "type": "object",
             "properties": {
@@ -795,6 +1394,49 @@
                 },
                 "roleName": {
                     "type": "string"
+                }
+            }
+        },
+        "github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.LightRequirement": {
+            "type": "object",
+            "properties": {
+                "criticalPhases": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dayLengthMin": {
+                    "type": "integer"
+                },
+                "dayLengthOpt": {
+                    "type": "integer"
+                },
+                "photoperiodType": {
+                    "type": "string"
+                },
+                "ppfdMin": {
+                    "type": "integer"
+                },
+                "ppfdOpt": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.WaterRequirement": {
+            "type": "object",
+            "properties": {
+                "criticalPhases": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dailyNeedMin": {
+                    "type": "integer"
+                },
+                "dailyNeedOpt": {
+                    "type": "integer"
                 }
             }
         },
@@ -1163,6 +1805,32 @@
                 }
             }
         },
+        "season.CreateSeasonCmd": {
+            "type": "object",
+            "required": [
+                "endDate",
+                "name",
+                "startDate",
+                "status"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "endDate": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
         "valueobject.Coordinates": {
             "type": "object",
             "properties": {
@@ -1227,6 +1895,156 @@
                 "Polygon",
                 "Point"
             ]
+        },
+        "valueobject.Maturity": {
+            "type": "object",
+            "properties": {
+                "daysToHarvest": {
+                    "type": "integer"
+                },
+                "gddtoHarvest": {
+                    "type": "number",
+                    "format": "float64"
+                }
+            }
+        },
+        "valueobject.Metadata": {
+            "type": "object",
+            "additionalProperties": {}
+        },
+        "variety.CreateVarietyCommand": {
+            "type": "object",
+            "required": [
+                "cropId",
+                "daysToMaturity",
+                "name"
+            ],
+            "properties": {
+                "cropId": {
+                    "type": "string"
+                },
+                "daysToMaturity": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "variety.Detail": {
+            "type": "object",
+            "properties": {
+                "baseTemperature": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "daysToMaturity": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "growingTypes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "id": {
+                    "type": "string"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "lightRequirement": {
+                    "$ref": "#/definitions/github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.LightRequirement"
+                },
+                "maxTemperature": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phenophaseGDD": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/variety.Phenophase"
+                    }
+                },
+                "speciesKey": {
+                    "type": "string"
+                },
+                "speciesName": {
+                    "type": "string"
+                },
+                "waterRequirement": {
+                    "$ref": "#/definitions/github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.WaterRequirement"
+                },
+                "yieldPotential": {
+                    "type": "string"
+                }
+            }
+        },
+        "variety.ListItem": {
+            "type": "object",
+            "properties": {
+                "cropId": {
+                    "type": "string"
+                },
+                "cropName": {
+                    "type": "string"
+                },
+                "daysToMaturity": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "variety.ListQuery": {
+            "type": "object",
+            "properties": {
+                "cropId": {
+                    "description": "tomato, eggplant, cucumber",
+                    "type": "string"
+                }
+            }
+        },
+        "variety.OneQuery": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
+        "variety.Phenophase": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "gddRequired": {
+                    "type": "integer"
+                },
+                "isCritical": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
         }
     },
     "securityDefinitions": {

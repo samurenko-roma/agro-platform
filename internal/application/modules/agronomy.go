@@ -1,15 +1,16 @@
 package modules
 
 import (
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/agronomy/crop"
+	cropCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/agronomy/crop"
 	"github.com/samurenkoroma/agro-platform/internal/application/commands/agronomy/season"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/agronomy/variety"
-	getcrop "github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/crop/get_crop"
-	listcrops "github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/crop/list_crops"
+	varietyCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/agronomy/variety"
+	cropQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/crop"
 	"github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/season/list_seasons"
-	getvariety "github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/variety/get_variety"
-	listvarieties "github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/variety/list_varieties"
+	listvarieties "github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/variety"
+	varietyQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/agronomy/variety"
 	"github.com/samurenkoroma/agro-platform/internal/application/uow"
+	cropProjection "github.com/samurenkoroma/agro-platform/internal/infrastructure/projection/postgres/agronomy/crop"
+	varietyProjection "github.com/samurenkoroma/agro-platform/internal/infrastructure/projection/postgres/agronomy/variety"
 	"github.com/samurenkoroma/agro-platform/pkg/utils"
 )
 
@@ -18,13 +19,13 @@ func MakeAgronomyModule(uow uow.UnitOfWork, db uow.DB) Module {
 		Commands: []*CommandCNF{
 			{
 				RouteName: "agronomy.create_crop",
-				Handler:   crop.NewHandler(uow).Create,
-				Decoder:   utils.DecodeJSON[crop.CreateCropCommand],
+				Handler:   cropCmd.NewHandler(uow).Create,
+				Decoder:   utils.DecodeJSON[cropCmd.CreateCropCommand],
 			},
 			{
 				RouteName: "agronomy.create_variety",
-				Handler:   variety.NewHandler(uow).Create,
-				Decoder:   utils.DecodeJSON[variety.CreateVarietyCommand],
+				Handler:   varietyCmd.NewHandler(uow).Create,
+				Decoder:   utils.DecodeJSON[varietyCmd.CreateVarietyCommand],
 			},
 			{
 				RouteName: "agronomy.create_season",
@@ -35,23 +36,23 @@ func MakeAgronomyModule(uow uow.UnitOfWork, db uow.DB) Module {
 		Queries: []*QueryCNF{
 			{
 				RouteName: "agronomy.get_crop",
-				Handler:   getcrop.New(db),
-				Decoder:   utils.DecodeJSON[getcrop.Query],
+				Handler:   cropQuery.NewGetOneHandler(cropProjection.New(db)),
+				Decoder:   utils.DecodeJSON[cropQuery.OneQuery],
 			},
 			{
 				RouteName: "agronomy.list_crops",
-				Handler:   listcrops.New(db),
-				Decoder:   utils.DecodeJSON[listcrops.Query],
+				Handler:   cropQuery.NewGetListHandler(cropProjection.New(db)),
+				Decoder:   utils.DecodeJSON[cropQuery.ListQuery],
 			},
 			{
 				RouteName: "agronomy.get_variety",
-				Handler:   getvariety.New(db),
-				Decoder:   utils.DecodeJSON[getvariety.Query],
+				Handler:   listvarieties.New(varietyProjection.New(db)),
+				Decoder:   utils.DecodeJSON[varietyQuery.OneQuery],
 			},
 			{
 				RouteName: "agronomy.list_varieties",
-				Handler:   listvarieties.New(db),
-				Decoder:   utils.DecodeJSON[listvarieties.Query],
+				Handler:   listvarieties.New(varietyProjection.New(db)),
+				Decoder:   utils.DecodeJSON[varietyQuery.ListQuery],
 			},
 			{
 				RouteName: "agronomy.list_seasons",

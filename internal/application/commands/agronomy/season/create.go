@@ -22,6 +22,17 @@ type CreateSeasonCmd struct {
 	Description string `json:"description"`
 }
 
+// Create godoc
+// @Summary Создать агрономический сезон (период планирования)
+// @Description Создать агрономический сезон (период планирования)
+// @Tags agronomy
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body CreateSeasonCmd true "Название, даты начала/конца, статус"
+// @Success 200 {object} response.SuccessResponse{data=response.IdResponse}
+// @Failure 409 {object} response.ErrResponse "VALIDATION_ERROR"
+// @Router /api/commands/agronomy.create_season [post]
 func (h *Handler) Create(ctx context.Context, cmd any) (any, error) {
 	c, ok := cmd.(*CreateSeasonCmd)
 	if !ok {

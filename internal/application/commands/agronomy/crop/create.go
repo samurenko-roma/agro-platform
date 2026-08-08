@@ -20,6 +20,17 @@ type CreateCropCommand struct {
 	Description *string              `json:"description,omitempty"`
 }
 
+// Create
+// @Summary Создать культуру
+// @Description Создать культуру в справочнике (Crop) — биология вида: температуры, GDD, водопотребление
+// @Tags agronomy
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param request body CreateCropCommand true "Название, категория, семейство, агрономический профиль"
+// @Success 200 {object} response.SuccessResponse{data=response.IdResponse}
+// @Failure 400 {object} response.ErrResponse "VALIDATION_ERROR"
+// @Router /api/commands/agronomy.create_crop [post]
 func (h *Handler) Create(ctx context.Context, payload any) (any, error) {
 	cmd := payload.(*CreateCropCommand)
 

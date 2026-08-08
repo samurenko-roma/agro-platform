@@ -81,6 +81,151 @@ definitions:
       role:
         type: string
     type: object
+  crop.AgronomyProfile:
+    properties:
+      lightRequirement:
+        $ref: '#/definitions/crop.LightRequirement'
+      maturity:
+        $ref: '#/definitions/valueobject.Maturity'
+      phenophaseGDD:
+        items:
+          $ref: '#/definitions/crop.PhenophaseGDD'
+        type: array
+      thermalRequirements:
+        $ref: '#/definitions/crop.ThermalRequirements'
+      tolerance:
+        $ref: '#/definitions/crop.Tolerance'
+      waterRequirement:
+        $ref: '#/definitions/crop.WaterRequirement'
+    type: object
+  crop.CreateCropCommand:
+    properties:
+      agronomy:
+        $ref: '#/definitions/crop.AgronomyProfile'
+      category:
+        type: string
+      description:
+        type: string
+      family:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  crop.Detail:
+    properties:
+      agronomy:
+        type: string
+      category:
+        type: string
+      family:
+        type: string
+      id:
+        type: string
+      metadata:
+        $ref: '#/definitions/valueobject.Metadata'
+      name:
+        type: string
+    type: object
+  crop.LightRequirement:
+    properties:
+      dayLengthMin:
+        format: int32
+        type: integer
+      dayLengthOpt:
+        format: int32
+        type: integer
+      photoperiodType:
+        type: string
+      ppfdmin:
+        type: integer
+      ppfdopt:
+        type: integer
+    type: object
+  crop.ListItem:
+    properties:
+      category:
+        type: string
+      family:
+        type: string
+      id:
+        type: string
+      imageUrl:
+        type: string
+      name:
+        type: string
+    type: object
+  crop.ListQuery:
+    properties:
+      archived:
+        type: boolean
+      categories:
+        items:
+          type: string
+        type: array
+      search:
+        type: string
+    type: object
+  crop.OneQuery:
+    properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  crop.PhenophaseGDD:
+    properties:
+      code:
+        description: '"BBCH-10"'
+        type: string
+      description:
+        description: описание фазы
+        type: string
+      gddrequired:
+        description: накопленное GDD для достижения
+        format: float64
+        type: number
+      isCritical:
+        description: критическая фаза?
+        type: boolean
+      name:
+        description: '"Первый настоящий лист"'
+        type: string
+    type: object
+  crop.ThermalRequirements:
+    properties:
+      baseTemperature:
+        format: float64
+        type: number
+      upperTemperature:
+        format: float64
+        type: number
+    type: object
+  crop.Tolerance:
+    properties:
+      humidityMax:
+        format: int32
+        type: integer
+      humidityMin:
+        format: int32
+        type: integer
+      temperatureMax:
+        format: int32
+        type: integer
+      temperatureMin:
+        format: int32
+        type: integer
+    type: object
+  crop.WaterRequirement:
+    properties:
+      dailyNeedMin:
+        format: float64
+        type: number
+      dailyNeedOpt:
+        format: float64
+        type: number
+    type: object
   dto.UserOrganizationInfo:
     properties:
       id:
@@ -91,6 +236,34 @@ definitions:
         type: string
       roleName:
         type: string
+    type: object
+  github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.LightRequirement:
+    properties:
+      criticalPhases:
+        items:
+          type: string
+        type: array
+      dayLengthMin:
+        type: integer
+      dayLengthOpt:
+        type: integer
+      photoperiodType:
+        type: string
+      ppfdMin:
+        type: integer
+      ppfdOpt:
+        type: integer
+    type: object
+  github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.WaterRequirement:
+    properties:
+      criticalPhases:
+        items:
+          type: string
+        type: array
+      dailyNeedMin:
+        type: integer
+      dailyNeedOpt:
+        type: integer
     type: object
   jwt.TokenPair:
     properties:
@@ -349,6 +522,24 @@ definitions:
       success:
         type: boolean
     type: object
+  season.CreateSeasonCmd:
+    properties:
+      description:
+        type: string
+      endDate:
+        type: string
+      name:
+        type: string
+      startDate:
+        type: string
+      status:
+        type: string
+    required:
+    - endDate
+    - name
+    - startDate
+    - status
+    type: object
   valueobject.Coordinates:
     properties:
       x:
@@ -393,6 +584,106 @@ definitions:
     - Rect
     - Polygon
     - Point
+  valueobject.Maturity:
+    properties:
+      daysToHarvest:
+        type: integer
+      gddtoHarvest:
+        format: float64
+        type: number
+    type: object
+  valueobject.Metadata:
+    additionalProperties: {}
+    type: object
+  variety.CreateVarietyCommand:
+    properties:
+      cropId:
+        type: string
+      daysToMaturity:
+        type: integer
+      name:
+        type: string
+    required:
+    - cropId
+    - daysToMaturity
+    - name
+    type: object
+  variety.Detail:
+    properties:
+      baseTemperature:
+        format: float64
+        type: number
+      daysToMaturity:
+        type: integer
+      description:
+        type: string
+      growingTypes:
+        items:
+          type: string
+        type: array
+      id:
+        type: string
+      image:
+        type: string
+      lightRequirement:
+        $ref: '#/definitions/github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.LightRequirement'
+      maxTemperature:
+        format: float64
+        type: number
+      name:
+        type: string
+      phenophaseGDD:
+        items:
+          $ref: '#/definitions/variety.Phenophase'
+        type: array
+      speciesKey:
+        type: string
+      speciesName:
+        type: string
+      waterRequirement:
+        $ref: '#/definitions/github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.WaterRequirement'
+      yieldPotential:
+        type: string
+    type: object
+  variety.ListItem:
+    properties:
+      cropId:
+        type: string
+      cropName:
+        type: string
+      daysToMaturity:
+        type: integer
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  variety.ListQuery:
+    properties:
+      cropId:
+        description: tomato, eggplant, cucumber
+        type: string
+    type: object
+  variety.OneQuery:
+    properties:
+      id:
+        type: string
+    required:
+    - id
+    type: object
+  variety.Phenophase:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      gddRequired:
+        type: integer
+      isCritical:
+        type: boolean
+      name:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact: {}
@@ -470,6 +761,111 @@ paths:
       summary: Переключиться на другую организацию
       tags:
       - account
+  /api/commands/agronomy.create_crop:
+    post:
+      consumes:
+      - application/json
+      description: 'Создать культуру в справочнике (Crop) — биология вида: температуры,
+        GDD, водопотребление'
+      parameters:
+      - description: Название, категория, семейство, агрономический профиль
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/crop.CreateCropCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.IdResponse'
+              type: object
+        "400":
+          description: VALIDATION_ERROR
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать культуру
+      tags:
+      - agronomy
+  /api/commands/agronomy.create_season:
+    post:
+      consumes:
+      - application/json
+      description: Создать агрономический сезон (период планирования)
+      parameters:
+      - description: Название, даты начала/конца, статус
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/season.CreateSeasonCmd'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.IdResponse'
+              type: object
+        "409":
+          description: VALIDATION_ERROR
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать агрономический сезон (период планирования)
+      tags:
+      - agronomy
+  /api/commands/agronomy.create_variety:
+    post:
+      consumes:
+      - application/json
+      description: Создать сорт культуры (Variety) — конкретный коммерческий сорт
+        с зрелостью/спейсингом
+      parameters:
+      - description: Название, ID культуры, дни до созревания
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/variety.CreateVarietyCommand'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/response.IdResponse'
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+        "409":
+          description: сорт с таким именем уже существует у этой культуры
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      security:
+      - BearerAuth: []
+      summary: Создать сорт культуры
+      tags:
+      - agronomy
   /api/commands/spatial.archive_production_unit:
     post:
       consumes:
@@ -620,6 +1016,124 @@ paths:
       summary: Текущий пользователь
       tags:
       - account
+  /api/queries/agronomy.get_crop:
+    post:
+      consumes:
+      - application/json
+      description: 'Реальный вызов: POST /api/queries, {"query": "agronomy.get_crop",
+        "data": <тело ниже>}'
+      parameters:
+      - description: ID культуры
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/crop.OneQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/crop.Detail'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Получить культуру по ID
+      tags:
+      - agronomy
+  /api/queries/agronomy.get_variety:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID сорта
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/variety.OneQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/variety.Detail'
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Получить сорт по ID
+      tags:
+      - agronomy
+  /api/queries/agronomy.list_crops:
+    post:
+      consumes:
+      - application/json
+      description: Список культур (с фильтром по категории)
+      parameters:
+      - description: Фильтр по категориям/поиску (опционально)
+        in: body
+        name: request
+        schema:
+          $ref: '#/definitions/crop.ListQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/crop.ListItem'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Список культур
+      tags:
+      - agronomy
+  /api/queries/agronomy.list_varieties:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID культуры
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/variety.ListQuery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/variety.ListItem'
+                  type: array
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Список сортов культуры
+      tags:
+      - agronomy
   /api/queries/spatial.get_production_unit:
     post:
       consumes:
