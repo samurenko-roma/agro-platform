@@ -1,26 +1,7 @@
 package swaggerdocs
 
-import (
-	itemCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/inventory/item"
-	warehouseCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/inventory/warehouse"
-	itemQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/inventory/item"
-	movQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/inventory/movement"
-	warehouseQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/inventory/warehouse"
-	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
-)
-
-var (
-	_ = itemCmd.CreateItemCommand{}
-	_ = warehouseCmd.CreateWarehouseCommand{}
-	_ = warehouseQuery.ListQuery{}
-	_ = movQuery.ListQuery{}
-	_ = itemQuery.ListQuery{}
-	_ = response.CommandResponse[any]{}
-)
-
 // docCreateItem godoc
 // @Summary Создать позицию склада (семена, удобрения, субстрат и т.д.)
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.create_item", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -32,7 +13,6 @@ func docCreateItem() {}
 
 // docReceive godoc
 // @Summary Оприходовать поступление на склад
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.receive", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -44,7 +24,6 @@ func docReceive() {}
 
 // docReserve godoc
 // @Summary Зарезервировать позицию (например, под цикл выращивания)
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.reserve", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -57,7 +36,6 @@ func docReserve() {}
 
 // docConsume godoc
 // @Summary Списать зарезервированное (реальный расход)
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.consume", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -70,7 +48,6 @@ func docConsume() {}
 
 // docMarkLost godoc
 // @Summary Списать позицию как утраченную (порча, просыпано и т.д.)
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.mark_lost", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -82,7 +59,6 @@ func docMarkLost() {}
 
 // docTransfer godoc
 // @Summary Переместить позицию между складами
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.transfer", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -94,7 +70,6 @@ func docTransfer() {}
 
 // docCreateWarehouse godoc
 // @Summary Создать склад
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.create_warehouse", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -106,7 +81,6 @@ func docCreateWarehouse() {}
 
 // docArchiveWarehouse godoc
 // @Summary Архивировать склад
-// @Description Реальный вызов: POST /api/commands, {"command": "inventory.archive_warehouse", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -118,7 +92,6 @@ func docArchiveWarehouse() {}
 
 // docGetItem godoc
 // @Summary Получить позицию склада по ID
-// @Description Реальный вызов: POST /api/queries, {"query": "inventory.get_item", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -130,7 +103,6 @@ func docGetItem() {}
 
 // docListItems godoc
 // @Summary Список позиций склада (опционально — по конкретному складу)
-// @Description Реальный вызов: POST /api/queries, {"query": "inventory.list_items", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -142,7 +114,6 @@ func docListItems() {}
 
 // docListMovements godoc
 // @Summary История движений (опционально — по конкретной позиции)
-// @Description Реальный вызов: POST /api/queries, {"query": "inventory.list_movements", "data": <тело ниже>}
 // @Tags inventory
 // @Accept json
 // @Produce json
@@ -154,7 +125,6 @@ func docListMovements() {}
 
 // docListWarehouses godoc
 // @Summary Список складов организации
-// @Description Реальный вызов: POST /api/queries, {"query": "inventory.list_warehouses", "data": {}}
 // @Tags inventory
 // @Accept json
 // @Produce json

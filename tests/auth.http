@@ -12,17 +12,21 @@ Content-Type: application/json
 "password": "admin123"
 }
 
+###
+
+POST http://{{host}}/auth/refresh
+Content-Type: application/json
+
+{"refresh_token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJvcmdfcm9sZSI6ItCS0LvQsNC00LXQu9C10YYiLCJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImlzcyI6ImhvbWUtc2VydmljZXMiLCJleHAiOjE3ODgwNjU5MDQsImlhdCI6MTc4NjYyNTkwNH0.dO_7zd_vIb_10SOHD_iB2FmVuAVF3G29GM_qvvBhxec"}
+
 
 
 ###
-POST http://{{host}}/api/queries/
+POST http://{{host}}/api/queries/account.me
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAxIiwidXNlcm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoic3VwZXJfYWRtaW4iLCJvcmdhbml6YXRpb25faWQiOiIxMTExMTExMS0xMTExLTExMTEtMTExMS0xMTExMTExMTExMTEiLCJvcmdfcm9sZSI6Im93bmVyIiwiaXNzIjoiaG9tZS1zZXJ2aWNlcyIsImV4cCI6MTc3NzQwNDA3MSwiaWF0IjoxNzc3MzE3NjcxfQ.rzgUSDRWd3dmAKpdHcu-LSJ5asRxPwz16ooulp-KkqI
+Authorization: Bearer {{token}}
 
 {
-  "query": "Me",
-  "data": {
-  }
 }
 
 ###

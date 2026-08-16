@@ -34,13 +34,23 @@ definitions:
       refresh_token:
         type: string
     type: object
+  auth.RefreshRequest:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  auth.RefreshResponse:
+    properties:
+      tokenPair:
+        $ref: '#/definitions/jwt.TokenPair'
+    type: object
   auth.RegisterRequest:
     properties:
       email:
         type: string
-      first_name:
+      firstName:
         type: string
-      last_name:
+      lastName:
         type: string
       password:
         maxLength: 32
@@ -65,7 +75,7 @@ definitions:
         type: string
       role:
         type: string
-      user_id:
+      userid:
         type: string
       username:
         type: string
@@ -611,7 +621,6 @@ definitions:
   variety.Detail:
     properties:
       baseTemperature:
-        format: float64
         type: number
       daysToMaturity:
         type: integer
@@ -628,11 +637,10 @@ definitions:
       lightRequirement:
         $ref: '#/definitions/github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.LightRequirement'
       maxTemperature:
-        format: float64
         type: number
       name:
         type: string
-      phenophaseGDD:
+      phenophases:
         items:
           $ref: '#/definitions/variety.Phenophase'
         type: array
@@ -684,7 +692,7 @@ definitions:
       name:
         type: string
     type: object
-host: localhost:8080
+host: api.lab.note
 info:
   contact: {}
   description: |-
@@ -1020,8 +1028,6 @@ paths:
     post:
       consumes:
       - application/json
-      description: 'Реальный вызов: POST /api/queries, {"query": "agronomy.get_crop",
-        "data": <тело ниже>}'
       parameters:
       - description: ID культуры
         in: body
@@ -1102,6 +1108,22 @@ paths:
       security:
       - BearerAuth: []
       summary: Список культур
+      tags:
+      - agronomy
+  /api/queries/agronomy.list_seasons:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.SuccessResponse'
+      security:
+      - BearerAuth: []
+      summary: Список сезонов организации
       tags:
       - agronomy
   /api/queries/agronomy.list_varieties:
@@ -1256,6 +1278,36 @@ paths:
       security:
       - BearerAuth: []
       summary: Выход (текущая реализация — заглушка, blacklist токенов не ведётся)
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: refresh token
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/auth.RefreshRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/auth.RefreshResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.ErrResponse'
+      summary: Перевыпуск токена
       tags:
       - auth
   /auth/register:

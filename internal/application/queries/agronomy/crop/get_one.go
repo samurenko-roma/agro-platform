@@ -17,7 +17,6 @@ func NewGetOneHandler(crops Projection) queries.Handler {
 
 // Ask godoc
 // @Summary Получить культуру по ID
-// @Description Реальный вызов: POST /api/queries, {"query": "agronomy.get_crop", "data": <тело ниже>}
 // @Tags agronomy
 // @Accept json
 // @Produce json

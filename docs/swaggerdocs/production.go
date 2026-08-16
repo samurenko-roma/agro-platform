@@ -1,28 +1,7 @@
 package swaggerdocs
 
-import (
-	allocationCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/production/allocation"
-	growingcycleCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/production/growing_cycle"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/production/harvest"
-	"github.com/samurenkoroma/agro-platform/internal/application/commands/production/planting"
-	allocationQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/production/allocation"
-	growingcycleQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/production/growing_cycle"
-	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
-)
-
-var (
-	_ = growingcycleCmd.CreateCommand{}
-	_ = growingcycleQuery.ListQuery{}
-	_ = allocationCmd.ChangeAllocationCommand{}
-	_ = allocationQuery.ListQuery{}
-	_ = harvest.RegisterHarvestCommand{}
-	_ = planting.RegisterPlantingCommand{}
-	_ = response.CommandResponse[any]{}
-)
-
 // docCreateCycle godoc
 // @Summary Зарегистрировать цикл выращивания без немедленного размещения
-// @Description Реальный вызов: POST /api/commands, {"command": "production.create_cycle", "data": <тело ниже>}. Для регистрации + сразу размещения на узлах см. production.start_cycle.
 // @Tags production
 // @Accept json
 // @Produce json
@@ -34,7 +13,6 @@ func docCreateCycle() {}
 
 // docStartCycle godoc
 // @Summary Создать цикл выращивания И сразу разместить его на физических узлах (+опционально посевы)
-// @Description Реальный вызов: POST /api/commands, {"command": "production.start_cycle", "data": <тело ниже>}. allocations — обязателен и непуст: без единого размещения это просто production.create_cycle. Статус цикла всегда становится Active, клиент его не выбирает.
 // @Tags production
 // @Accept json
 // @Produce json
@@ -46,7 +24,6 @@ func docStartCycle() {}
 
 // docAllocateProductionUnit godoc
 // @Summary Разместить (доп.) цикл выращивания на физическом узле
-// @Description Реальный вызов: POST /api/commands, {"command": "production.allocate_production_unit", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -59,7 +36,6 @@ func docAllocateProductionUnit() {}
 
 // docChangeAllocation godoc
 // @Summary Изменить размещение (площадь/даты, либо перенести на другой узел)
-// @Description Реальный вызов: POST /api/commands, {"command": "production.change_allocation", "data": <тело ниже>}. При смене узла старый освобождается, новый занимается — уведомление уходит в Spatial автоматически.
 // @Tags production
 // @Accept json
 // @Produce json
@@ -71,7 +47,6 @@ func docChangeAllocation() {}
 
 // docReleaseAllocation godoc
 // @Summary Завершить размещение (освободить физический узел)
-// @Description Реальный вызов: POST /api/commands, {"command": "production.release_allocation", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -84,7 +59,6 @@ func docReleaseAllocation() {}
 
 // docPlantingRegister godoc
 // @Summary Зарегистрировать акт посева/посадки
-// @Description Реальный вызов: POST /api/commands, {"command": "production.planting_register", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -97,7 +71,6 @@ func docPlantingRegister() {}
 
 // docPlantingChange godoc
 // @Summary Изменить ранее зарегистрированный посев
-// @Description Реальный вызов: POST /api/commands, {"command": "production.planting_change", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -109,7 +82,6 @@ func docPlantingChange() {}
 
 // docHarvestRegister godoc
 // @Summary Зарегистрировать сбор урожая
-// @Description Реальный вызов: POST /api/commands, {"command": "production.harvest_register", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -122,7 +94,6 @@ func docHarvestRegister() {}
 
 // docHarvestChange godoc
 // @Summary Изменить ранее зарегистрированный сбор урожая
-// @Description Реальный вызов: POST /api/commands, {"command": "production.harvest_change", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -134,7 +105,6 @@ func docHarvestChange() {}
 
 // docGetGrowingCycle godoc
 // @Summary Получить один цикл выращивания (сводка: площадь, посажено, собрано)
-// @Description Реальный вызов: POST /api/queries, {"query": "production.get_growing_cycle", "data": <тело ниже>}. Сейчас идентично production.summary_growing_cycles.
 // @Tags production
 // @Accept json
 // @Produce json
@@ -146,7 +116,6 @@ func docGetGrowingCycle() {}
 
 // docListGrowingCycles godoc
 // @Summary Список циклов выращивания, сгруппированных по культуре, с аллокациями и прогрессом
-// @Description Реальный вызов: POST /api/queries, {"query": "production.list_growing_cycles", "data": {}}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -157,7 +126,6 @@ func docListGrowingCycles() {}
 
 // docSummaryGrowingCycles godoc
 // @Summary Сводка по одному циклу: занятая площадь, посажено, собрано
-// @Description Реальный вызов: POST /api/queries, {"query": "production.summary_growing_cycles", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -169,7 +137,6 @@ func docSummaryGrowingCycles() {}
 
 // docGetAllocation godoc
 // @Summary Получить размещение по ID (с кодом физического узла)
-// @Description Реальный вызов: POST /api/queries, {"query": "production.get_allocation", "data": <тело ниже>}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -181,7 +148,6 @@ func docGetAllocation() {}
 
 // docListAllocations godoc
 // @Summary Список всех размещений организации
-// @Description Реальный вызов: POST /api/queries, {"query": "production.list_allocations", "data": {}}
 // @Tags production
 // @Accept json
 // @Produce json
@@ -192,7 +158,6 @@ func docListAllocations() {}
 
 // docHelpers godoc
 // @Summary Справочник допустимых статусов/стадий/методов цикла выращивания (для выпадающих списков UI)
-// @Description Реальный вызов: POST /api/queries, {"query": "production.helpers", "data": {}}
 // @Tags production
 // @Accept json
 // @Produce json

@@ -23,12 +23,11 @@ type Query struct {
 
 // Ask godoc
 // @Summary Список сезонов организации
-// @Description Реальный вызов: POST /api/queries, {"query": "agronomy.list_seasons", "data": {}}
 // @Tags agronomy
 // @Accept json
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {object} response.CommandResponse[any]
+// @Success 200 {object} response.SuccessResponse
 // @Router /api/queries/agronomy.list_seasons [post]
 func (h *handler) Ask(ctx context.Context, query any) (any, error) {
 	_, ok := query.(*Query)

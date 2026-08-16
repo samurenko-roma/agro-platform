@@ -1,26 +1,7 @@
 package swaggerdocs
 
-import (
-	opCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/operations/operation_event"
-	taskCmd "github.com/samurenkoroma/agro-platform/internal/application/commands/operations/task"
-	opQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/operations/operation_event"
-	taskQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/operations/task"
-	tlQuery "github.com/samurenkoroma/agro-platform/internal/application/queries/operations/timeline"
-	"github.com/samurenkoroma/agro-platform/internal/interfaces/http/response"
-)
-
-var (
-	_ = taskCmd.CreateTaskCommand{}
-	_ = tlQuery.GetQuery{}
-	_ = taskQuery.GetOneQuery{}
-	_ = opCmd.RecordOperationCommand{}
-	_ = opQuery.ListQuery{}
-	_ = response.CommandResponse[any]{}
-)
-
 // docCreateTask godoc
 // @Summary Создать задачу (наряд на выполнение работ)
-// @Description Реальный вызов: POST /api/commands, {"command": "operations.create_task", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -32,7 +13,6 @@ func docCreateTask() {}
 
 // docAssignTask godoc
 // @Summary Назначить задачу исполнителю
-// @Description Реальный вызов: POST /api/commands, {"command": "operations.assign_task", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -44,7 +24,6 @@ func docAssignTask() {}
 
 // docStartTask godoc
 // @Summary Взять задачу в работу (TODO → IN_PROGRESS)
-// @Description Реальный вызов: POST /api/commands, {"command": "operations.start_task", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -56,7 +35,6 @@ func docStartTask() {}
 
 // docCompleteTask godoc
 // @Summary Завершить задачу (→ DONE)
-// @Description Реальный вызов: POST /api/commands, {"command": "operations.complete_task", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -68,7 +46,6 @@ func docCompleteTask() {}
 
 // docCancelTask godoc
 // @Summary Отменить задачу (→ CANCELLED)
-// @Description Реальный вызов: POST /api/commands, {"command": "operations.cancel_task", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -80,7 +57,6 @@ func docCancelTask() {}
 
 // docRecordOperation godoc
 // @Summary Зафиксировать агрономическую операцию (полив, удобрение, обработка и т.д.)
-// @Description Реальный вызов: POST /api/commands, {"command": "operations.record_operation", "data": <тело ниже>}. Автоматически добавляется в таймлайн цикла/фермы.
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -92,7 +68,6 @@ func docRecordOperation() {}
 
 // docGetTask godoc
 // @Summary Получить задачу по ID
-// @Description Реальный вызов: POST /api/queries, {"query": "operations.get_task", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -104,7 +79,6 @@ func docGetTask() {}
 
 // docListTasks godoc
 // @Summary Список задач фермы (опционально — по циклу выращивания)
-// @Description Реальный вызов: POST /api/queries, {"query": "operations.list_tasks", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -116,7 +90,6 @@ func docListTasks() {}
 
 // docGetTimeline godoc
 // @Summary Таймлайн операций/задач (по циклу или общий по ферме)
-// @Description Реальный вызов: POST /api/queries, {"query": "operations.get_timeline", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json
@@ -128,7 +101,6 @@ func docGetTimeline() {}
 
 // docListOperations godoc
 // @Summary Список зафиксированных агрономических операций
-// @Description Реальный вызов: POST /api/queries, {"query": "operations.list_operations", "data": <тело ниже>}
 // @Tags operations
 // @Accept json
 // @Produce json

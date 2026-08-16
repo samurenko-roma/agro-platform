@@ -67,7 +67,7 @@ func NewRouter(cfg RouterConfig) http.Handler {
 		}
 		response.Success(res).WriteJSON(w, http.StatusOK)
 	})
-
+	mux.HandleFunc("POST /auth/refresh", authHandler.Refresh)
 	authMiddleware := NewAuthMiddleware(cfg.JWTService)
 	// Защищенные эндпоинты (требуют аутентификации)
 	mux.Handle("POST /auth/logout", authMiddleware.Authenticate(

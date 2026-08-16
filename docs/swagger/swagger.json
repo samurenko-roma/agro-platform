@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "api.lab.note",
     "paths": {
         "/api/commands/account.create_organization": {
             "post": {
@@ -570,7 +570,6 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Реальный вызов: POST /api/queries, {\"query\": \"agronomy.get_crop\", \"data\": \u003cтело ниже\u003e}",
                 "consumes": [
                     "application/json"
                 ],
@@ -712,6 +711,33 @@
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/queries/agronomy.list_seasons": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "agronomy"
+                ],
+                "summary": "Список сезонов организации",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.SuccessResponse"
                         }
                     }
                 }
@@ -989,6 +1015,57 @@
                 }
             }
         },
+        "/auth/refresh": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "Перевыпуск токена",
+                "parameters": [
+                    {
+                        "description": "refresh token",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/auth.RefreshRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/auth.RefreshResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/register": {
             "post": {
                 "consumes": [
@@ -1096,6 +1173,22 @@
                 }
             }
         },
+        "auth.RefreshRequest": {
+            "type": "object",
+            "properties": {
+                "refresh_token": {
+                    "type": "string"
+                }
+            }
+        },
+        "auth.RefreshResponse": {
+            "type": "object",
+            "properties": {
+                "tokenPair": {
+                    "$ref": "#/definitions/jwt.TokenPair"
+                }
+            }
+        },
         "auth.RegisterRequest": {
             "type": "object",
             "required": [
@@ -1107,10 +1200,10 @@
                 "email": {
                     "type": "string"
                 },
-                "first_name": {
+                "firstName": {
                     "type": "string"
                 },
-                "last_name": {
+                "lastName": {
                     "type": "string"
                 },
                 "password": {
@@ -1140,7 +1233,7 @@
                 "role": {
                     "type": "string"
                 },
-                "user_id": {
+                "userid": {
                     "type": "string"
                 },
                 "username": {
@@ -1935,8 +2028,7 @@
             "type": "object",
             "properties": {
                 "baseTemperature": {
-                    "type": "number",
-                    "format": "float64"
+                    "type": "number"
                 },
                 "daysToMaturity": {
                     "type": "integer"
@@ -1960,13 +2052,12 @@
                     "$ref": "#/definitions/github_com_samurenkoroma_agro-platform_internal_application_queries_agronomy_variety.LightRequirement"
                 },
                 "maxTemperature": {
-                    "type": "number",
-                    "format": "float64"
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"
                 },
-                "phenophaseGDD": {
+                "phenophases": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/variety.Phenophase"

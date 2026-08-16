@@ -36,13 +36,12 @@ func (m *AuthMiddleware) Authenticate(next http.Handler) http.Handler {
 
 		token := parts[1]
 
-		claims, err := m.jwtService.ValidateToken(token)
+		claims, err := m.jwtService.ValidateAccessToken(token) // ← было ValidateToken
 		if err != nil {
 			response.WriteUnauthorized(w, err.Error())
 			return
 		}
 
-		// Добавляем ВСЕ данные из токена в контекст
 		ctx := r.Context()
 		ctx = context.WithValue(ctx, "user_id", claims.UserID)
 		ctx = context.WithValue(ctx, "username", claims.Username)

@@ -46,7 +46,7 @@ func MakeAgronomyModule(uow uow.UnitOfWork, db uow.DB) Module {
 			},
 			{
 				RouteName: "agronomy.get_variety",
-				Handler:   listvarieties.New(varietyProjection.New(db)),
+				Handler:   listvarieties.NewGetOneHandler(varietyProjection.New(db)),
 				Decoder:   utils.DecodeJSON[varietyQuery.OneQuery],
 			},
 			{

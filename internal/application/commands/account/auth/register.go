@@ -16,14 +16,14 @@ type RegisterRequest struct {
 	Email     string `json:"email" validate:"required,email"`
 	Username  string `json:"username" validate:"required,min=3,max=32"`
 	Password  string `json:"password" validate:"required,min=8,max=32"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
 	Phone     string `json:"phone"`
 }
 
 // RegisterResponse ответ на регистрацию
 type RegisterResponse struct {
-	UserID   string `json:"user_id"`
+	UserID   string `json:"userid"`
 	Email    string `json:"email"`
 	Username string `json:"username"`
 	Role     string `json:"role"`

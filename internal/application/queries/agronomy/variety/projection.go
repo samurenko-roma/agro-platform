@@ -9,40 +9,40 @@ type ListFilter struct {
 }
 
 type Detail struct {
-	ID               string `json:"id"`
-	Name             string
-	SpeciesKey       string
-	SpeciesName      string
-	BaseTemperature  float64
-	MaxTemperature   float64
-	DaysToMaturity   int
-	PhenophaseGDD    []Phenophase
-	WaterRequirement WaterRequirement
-	LightRequirement LightRequirement
-	YieldPotential   string
-	GrowingTypes     []string
-	Description      string
-	Image            string
+	ID               string           `json:"id"`
+	Name             string           `json:"name"`
+	SpeciesKey       string           `json:"speciesKey"`
+	SpeciesName      string           `json:"speciesName"`
+	BaseTemperature  float64          `json:"baseTemperature"`
+	MaxTemperature   float64          `json:"maxTemperature"`
+	DaysToMaturity   int              `json:"daysToMaturity"`
+	PhenophaseGDD    []Phenophase     `json:"phenophases"`
+	WaterRequirement WaterRequirement `json:"waterRequirement"`
+	LightRequirement LightRequirement `json:"lightRequirement"`
+	YieldPotential   string           `json:"yieldPotential"`
+	GrowingTypes     []string         `json:"growingTypes"`
+	Description      string           `json:"description"`
+	Image            string           `json:"image"`
 }
 type Phenophase struct {
-	Code        string
-	Name        string
-	GddRequired int
-	Description string
-	IsCritical  bool
+	Code        string `json:"code"`
+	Name        string `json:"name"`
+	GddRequired int    `json:"gddRequired"`
+	Description string `json:"description"`
+	IsCritical  bool   `json:"isCritical"`
 }
 type WaterRequirement struct {
-	DailyNeedMin   int
-	DailyNeedOpt   int
-	CriticalPhases []string
+	DailyNeedMin   int      `json:"dailyNeedMin"`
+	DailyNeedOpt   int      `json:"dailyNeedOpt"`
+	CriticalPhases []string `json:"criticalPhases"`
 }
 type LightRequirement struct {
-	PpfdMin         int
-	PpfdOpt         int
-	DayLengthMin    int
-	DayLengthOpt    int
-	PhotoperiodType string
-	CriticalPhases  []string
+	PpfdMin         int      `json:"ppfdMin"`
+	PpfdOpt         int      `json:"ppfdOpt"`
+	DayLengthMin    int      `json:"dayLengthMin"`
+	DayLengthOpt    int      `json:"dayLengthOpt"`
+	PhotoperiodType string   `json:"photoperiodType"`
+	CriticalPhases  []string `json:"criticalPhases"`
 }
 
 type ListItem struct {

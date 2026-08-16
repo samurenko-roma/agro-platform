@@ -52,3 +52,15 @@ Content-Type: application/json
     "id": "tomato"
   }
 }
+
+###
+
+POST http://localhost:8080/api/queries/agronomy.get_variety
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "id": ""
+}
+
+###

@@ -9,14 +9,20 @@ import (
 	configs "github.com/samurenkoroma/agro-platform/internal/shared/config"
 )
 
+const (
+	TokenTypeAccess  = "access"
+	TokenTypeRefresh = "refresh"
+)
+
 // Claims структура JWT токена (с OrganizationID)
 type Claims struct {
 	UserID         string `json:"user_id"`
 	Username       string `json:"username"`
 	Email          string `json:"email"`
-	Role           string `json:"role"`            // глобальная роль (для админки)
-	OrganizationID string `json:"organization_id"` // ТЕКУЩАЯ ОРГАНИЗАЦИЯ!
-	OrgRole        string `json:"org_role"`        // роль в текущей организации
+	Role           string `json:"role"`
+	OrganizationID string `json:"organization_id"`
+	OrgRole        string `json:"org_role"`
+	TokenType      string `json:"token_type"` // "access" | "refresh" — различает, где можно использовать токен
 	jwt.RegisteredClaims
 }
 
@@ -56,26 +62,14 @@ func (s *Service) GenerateTokenPair(userID, username, email, globalRole, organiz
 }
 
 func (s *Service) generateAccessToken(userID, username, email, globalRole, organizationID, orgRole string) (string, error) {
-	now := time.Now()
-	claims := Claims{
-		UserID:         userID,
-		Username:       username,
-		Email:          email,
-		Role:           globalRole,
-		OrganizationID: organizationID,
-		OrgRole:        orgRole,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(now.Add(s.config.AccessExpiry)),
-			IssuedAt:  jwt.NewNumericDate(now),
-			Issuer:    s.config.Issuer,
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(s.config.SecretKey))
+	return s.generateToken(userID, username, email, globalRole, organizationID, orgRole, TokenTypeAccess, s.config.AccessExpiry)
 }
 
 func (s *Service) generateRefreshToken(userID, username, email, globalRole, organizationID, orgRole string) (string, error) {
+	return s.generateToken(userID, username, email, globalRole, organizationID, orgRole, TokenTypeRefresh, s.config.RefreshExpiry)
+}
+
+func (s *Service) generateToken(userID, username, email, globalRole, organizationID, orgRole, tokenType string, ttl time.Duration) (string, error) {
 	now := time.Now()
 	claims := Claims{
 		UserID:         userID,
@@ -84,8 +78,9 @@ func (s *Service) generateRefreshToken(userID, username, email, globalRole, orga
 		Role:           globalRole,
 		OrganizationID: organizationID,
 		OrgRole:        orgRole,
+		TokenType:      tokenType,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(now.Add(s.config.RefreshExpiry)),
+			ExpiresAt: jwt.NewNumericDate(now.Add(ttl)),
 			IssuedAt:  jwt.NewNumericDate(now),
 			Issuer:    s.config.Issuer,
 		},
@@ -95,7 +90,10 @@ func (s *Service) generateRefreshToken(userID, username, email, globalRole, orga
 	return token.SignedString([]byte(s.config.SecretKey))
 }
 
-// ValidateToken валидирует токен и возвращает claims
+// ValidateToken валидирует токен и возвращает claims — БЕЗ проверки типа.
+// Используй ValidateAccessToken/ValidateRefreshToken там, где важно точно
+// знать, какой именно токен пришёл (везде, кроме внутренних служебных
+// случаев).
 func (s *Service) ValidateToken(tokenString string) (*Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -118,9 +116,35 @@ func (s *Service) ValidateToken(tokenString string) (*Claims, error) {
 	return nil, user.ErrInvalidToken
 }
 
-// RefreshToken обновляет access токен
+// ValidateAccessToken — валидация для защищённых API-эндпоинтов
+// (AuthMiddleware). Отклоняет refresh-токен, даже если подпись валидна.
+func (s *Service) ValidateAccessToken(tokenString string) (*Claims, error) {
+	claims, err := s.ValidateToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+	if claims.TokenType != TokenTypeAccess {
+		return nil, user.ErrInvalidToken
+	}
+	return claims, nil
+}
+
+// ValidateRefreshToken — валидация для /auth/refresh. Отклоняет access-
+// токен, даже если подпись валидна.
+func (s *Service) ValidateRefreshToken(tokenString string) (*Claims, error) {
+	claims, err := s.ValidateToken(tokenString)
+	if err != nil {
+		return nil, err
+	}
+	if claims.TokenType != TokenTypeRefresh {
+		return nil, user.ErrInvalidToken
+	}
+	return claims, nil
+}
+
+// RefreshToken обновляет пару токенов по refresh-токену
 func (s *Service) RefreshToken(refreshToken string) (*TokenPair, error) {
-	claims, err := s.ValidateToken(refreshToken)
+	claims, err := s.ValidateRefreshToken(refreshToken)
 	if err != nil {
 		return nil, err
 	}

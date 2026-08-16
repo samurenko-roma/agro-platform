@@ -18,7 +18,7 @@
 // @version 1.0
 // @description CQRS-style API. У каждой команды/запроса — свой путь вида
 // @description /api/commands/{name} или /api/queries/{name}, тело = data.
-// @host localhost:8080
+// @host api.lab.note
 // @securityDefinitions.apikey BearerAuth
 // @in header
 // @name Authorization
